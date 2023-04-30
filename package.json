@@ -34,7 +34,8 @@
     "wagmi": "^0.12.10"
   },
   "engines": {
-    "node": "16.x"
+    "node": "16.x",
+    "yarn": "1.22.x"
   },
   "devDependencies": {
     "@babel/core": "7.12.13",
