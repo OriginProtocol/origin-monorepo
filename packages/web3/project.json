@@ -4,16 +4,6 @@
   "sourceRoot": "packages/web3/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/web3",
-        "main": "packages/web3/src/index.ts",
-        "tsConfig": "packages/web3/tsconfig.lib.json",
-        "assets": ["packages/web3/*.md"]
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
