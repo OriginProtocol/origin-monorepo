@@ -2,6 +2,8 @@
   "name": "@originprotocol/utils",
   "version": "0.0.1",
   "type": "commonjs",
-  "dependencies": {},
+  "dependencies": {
+    "@nrwl/js": "^16.0.1"
+  },
   "devDependencies": {}
 }
