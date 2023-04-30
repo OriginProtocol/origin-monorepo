@@ -11,6 +11,7 @@
     "generate-package-types": "tsc --p tsconfig.base.json"
   },
   "dependencies": {
+    "@nrwl/next": "^15.9.2",
     "@sentry/nextjs": "^7.48.0",
     "@storybook/react": "^7.0.6",
     "@web3modal/ethereum": "^2.3.6",
@@ -46,7 +47,6 @@
     "@nrwl/jest": "16.0.0-beta.2",
     "@nrwl/js": "16.0.0-beta.2",
     "@nrwl/linter": "15.9.2",
-    "@nrwl/next": "^15.9.2",
     "@nrwl/react": "15.9.2",
     "@nrwl/storybook": "^16.0.0-beta.2",
     "@nrwl/webpack": "15.9.2",
