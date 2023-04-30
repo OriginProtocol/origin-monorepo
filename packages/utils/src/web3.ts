@@ -35,7 +35,7 @@ export const isEqualAddress = (
 ) => addr?.toLowerCase() === otherAddr?.toLowerCase();
 
 export const findTokenBySymbol = (tokens: Token[], symbol: string) => {
-  return find(tokens, ({ symbol: currentSymbol }) =>
+  return find(tokens, ({ symbol: currentSymbol }: { symbol: string }) =>
     isEqualAddress(currentSymbol, symbol)
   );
 };
@@ -44,7 +44,7 @@ export const findTokenByAddress = (
   tokens: Token[],
   contractAddress: string
 ) => {
-  return find(tokens, ({ address }) =>
+  return find(tokens, ({ address }: { address: string }) =>
     isEqualAddress(address, contractAddress)
   );
 };

@@ -591,6 +591,10 @@ const estimateFlipperSwap = async ({
       contract: config.contract,
     };
   }
+  return {
+    error: 'UNIMPLEMENTED',
+    contract: config.contract,
+  };
 };
 
 const estimateUniswapV2Swap = async ({
@@ -620,6 +624,10 @@ const estimateUniswapV2Swap = async ({
       contract: config.contract,
     };
   }
+  return {
+    error: 'UNIMPLEMENTED',
+    contract: config.contract,
+  };
 };
 
 const estimateUniswapV3Swap = async ({
@@ -649,6 +657,10 @@ const estimateUniswapV3Swap = async ({
       contract: config.contract,
     };
   }
+  return {
+    error: 'UNIMPLEMENTED',
+    contract: config.contract,
+  };
 };
 
 const estimateCurveSwap = async ({
@@ -678,6 +690,10 @@ const estimateCurveSwap = async ({
       contract: config.contract,
     };
   }
+  return {
+    error: 'UNIMPLEMENTED',
+    contract: config.contract,
+  };
 };
 
 const estimateSushiSwap = async ({
@@ -707,6 +723,10 @@ const estimateSushiSwap = async ({
       contract: config.contract,
     };
   }
+  return {
+    error: 'UNIMPLEMENTED',
+    contract: config.contract,
+  };
 };
 
 const enrichAndSortEstimates = (
