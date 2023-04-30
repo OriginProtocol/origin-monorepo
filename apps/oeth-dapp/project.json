@@ -66,6 +66,5 @@
       }
     }
   },
-  "tags": ["type:app"],
-  "implicitDependencies": ["hooks", "ui", "utils", "web3"]
+  "tags": ["type:app"]
 }
