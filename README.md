@@ -52,6 +52,14 @@ yarn run dev:oeth-dapp # Port 4201 by default
 
 If you see a `Runtime Error: underlying network changed`, then rename `dApp/dev.env` to `.env` and restart `yarn`
 
+### Installing packages
+Installing packages can be done at a per app or workspace level. Workspace installions require the -W flag and would allow more than a single app or package to leverage
+the module
+```bash
+yarn add <package-name> -W
+```
+
+
 ## Contributing
 Want to contribute to Origin? Awesome!
 
