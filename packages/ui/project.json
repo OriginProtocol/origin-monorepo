@@ -4,16 +4,6 @@
   "sourceRoot": "packages/ui/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/ui",
-        "main": "packages/ui/src/index.ts",
-        "tsConfig": "packages/ui/tsconfig.lib.json",
-        "assets": ["packages/ui/*.md"]
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

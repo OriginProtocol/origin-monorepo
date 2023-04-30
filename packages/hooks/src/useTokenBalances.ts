@@ -20,7 +20,7 @@ type TokenBalanceProps = {
 const useTokenBalances = ({ address, tokens }: TokenBalanceProps) => {
   const tokenKeys = Object.keys(tokens);
 
-  const { data: ethBalance } = useBalance({
+  const { data: ethBalance, refetch: refetchEth } = useBalance({
     // @ts-ignore
     address,
   });
@@ -61,7 +61,15 @@ const useTokenBalances = ({ address, tokens }: TokenBalanceProps) => {
     );
   }, [JSON.stringify(tokenKeys), JSON.stringify(data), ethBalance]);
 
-  return { data: balances, isError, isLoading, onRefresh: refetch };
+  return {
+    data: balances,
+    isError,
+    isLoading,
+    onRefresh: () => {
+      refetchEth();
+      refetch();
+    },
+  };
 };
 
 export default useTokenBalances;

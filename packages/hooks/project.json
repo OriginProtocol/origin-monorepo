@@ -4,16 +4,6 @@
   "sourceRoot": "packages/hooks/src",
   "projectType": "library",
   "targets": {
-    "build": {
-      "executor": "@nrwl/js:tsc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/hooks",
-        "main": "packages/hooks/src/index.ts",
-        "tsConfig": "packages/hooks/tsconfig.lib.json",
-        "assets": ["packages/hooks/*.md"]
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
