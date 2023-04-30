@@ -4,7 +4,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "start": "next start"
+    "build": "sh deployment/build-frontend.sh",
+    "start": "sh deployment/start-frontend.sh"
   }
 }

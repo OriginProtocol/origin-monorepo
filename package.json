@@ -4,8 +4,6 @@
   "private": true,
   "homepage": "https://github.com/originprotocol/origin-monorepo",
   "scripts": {
-    "build": "sh devops/build-frontend.sh",
-    "start": "sh devops/start-frontend.sh",
     "dev:oeth-dapp": "nx serve oeth-dapp",
     "dev:ousd-dapp": "nx serve ousd-dapp",
     "generate-package-types": "tsc --p tsconfig.base.json"
