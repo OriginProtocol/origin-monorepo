@@ -81,7 +81,7 @@ const SettingsMenu = ({ i18n, onChange, settings }: SettingsMenuProps) => {
           className="absolute top-[48px] right-0 flex flex-col w-[300px] bg-origin-bg-lgrey z-[2] shadow-xl border border-[1px] border-origin-bg-dgrey rounded-xl"
         >
           <h2 className="flex flex-shrink-0 px-6 h-[80px] items-center">
-            {i18n('settings.title')}
+            {i18n('settings.title', { ns: 'swap' })}
           </h2>
           <div className="h-[1px] w-full border-b-[1px] border-origin-bg-dgrey" />
           <div className="flex flex-col justify-center h-full space-y-4 p-6">
@@ -90,7 +90,7 @@ const SettingsMenu = ({ i18n, onChange, settings }: SettingsMenuProps) => {
                 htmlFor="settings-tolerance"
                 className="text-origin-dimmed"
               >
-                {i18n('settings.tolerance')}
+                {i18n('settings.tolerance', { ns: 'swap' })}
               </label>
               <div className="flex flex-row space-x-2">
                 <div className="relative flex flex-row items-center px-6 justify-center w-full max-w-[120px] h-[44px] rounded-full overflow-hidden z-[2] bg-origin-blue bg-opacity-5 border border-origin-blue">
@@ -106,18 +106,18 @@ const SettingsMenu = ({ i18n, onChange, settings }: SettingsMenuProps) => {
                   className="flex items-center justify-center flex-shrink-0 h-[44px] px-6 bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-full"
                   onClick={handleAutoChange}
                 >
-                  {i18n('settings.auto')}
+                  {i18n('settings.auto', { ns: 'swap' })}
                 </button>
               </div>
               {showFrontRunMessage && (
                 <span role="alert" className="text-origin-secondary text-sm">
-                  {i18n('settings.frontRun')}
+                  {i18n('settings.frontRun', { ns: 'swap' })}
                 </span>
               )}
             </div>
             <div className="flex flex-col space-y-2">
               <label htmlFor="settings-gasPrice" className="text-origin-dimmed">
-                {i18n('settings.gasPrice')}
+                {i18n('settings.gasPrice', { ns: 'swap' })}
               </label>
               <div className="flex flex-row space-x-2">
                 <div className="relative flex flex-row items-center px-6 justify-center max-w-[160px] w-full h-[44px] rounded-full overflow-hidden z-[2] bg-origin-blue bg-opacity-5 border border-origin-blue">

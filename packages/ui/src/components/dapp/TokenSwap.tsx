@@ -13,6 +13,10 @@ import { SWAP_TYPES } from '../../constants';
 import SwapForm from './SwapForm';
 import SwapRoutes from './SwapRoutes';
 
+const Connect = dynamic(() => import('../core/Connect'), {
+  ssr: false,
+});
+
 const SwapActions = dynamic(() => import('./SwapActions'), {
   ssr: false,
 });
@@ -43,7 +47,7 @@ const TokenSwap = ({
   usdConversionPrice,
   storageKey,
 }: TokenSwapProps) => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [settings, setSettings] = useState({
     tolerance: 1,
@@ -260,16 +264,23 @@ const TokenSwap = ({
           onSelect={onSelectEstimate}
         />
       ) : null}
-      <SwapActions
-        i18n={i18n}
-        swap={swap}
-        selectedToken={selectedToken}
-        estimatedToken={estimatedToken}
-        targetContract={selectedEstimate?.contract}
-        onSuccess={onSuccess}
-        onRefresh={onRefresh}
-        isLoadingEstimate={isLoadingEstimate}
-      />
+      {isConnected ? (
+        <SwapActions
+          i18n={i18n}
+          swap={swap}
+          selectedToken={selectedToken}
+          estimatedToken={estimatedToken}
+          targetContract={selectedEstimate?.contract}
+          onSuccess={onSuccess}
+          onRefresh={onRefresh}
+          isLoadingEstimate={isLoadingEstimate}
+        />
+      ) : (
+        <Connect
+          i18n={i18n}
+          className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
+        />
+      )}
     </div>
   );
 };

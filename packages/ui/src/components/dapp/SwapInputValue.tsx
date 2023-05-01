@@ -61,7 +61,7 @@ const SwapInputValue = ({
       <div className="flex flex-col w-[50%] items-end flex-shrink-0 space-y-4">
         <div className="flex flex-row space-x-4 items-center">
           <span className="text-sm lg:text-base text-origin-dimmed">
-            {i18n('balance')}:{' '}
+            {i18n('balance', { ns: 'swap' })}:{' '}
             {selectedTokenBalance
               ? parseFloat(selectedTokenBalance).toFixed(6)
               : '-'}
@@ -71,7 +71,7 @@ const SwapInputValue = ({
               className="flex items-center justify-center px-2 bg-origin-white bg-opacity-10 text-origin-dimmed rounded-lg"
               onClick={onSetMax.bind(null, selectedToken?.balanceOf)}
             >
-              {i18n('max')}
+              {i18n('max', { ns: 'swap' })}
             </button>
           )}
         </div>

@@ -21,7 +21,8 @@
     "connect": "Connect",
     "disconnect": "Disconnect",
     "account": "Account",
-    "connected": "Connected to"
+    "connected": "Connected to",
+    "switchNetwork": "Switch network to {{networkName}}"
   },
   "portfolio": {
     "title": "Portfolio",

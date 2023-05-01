@@ -47,7 +47,9 @@ const SwapForm = ({
     <>
       <div className="flex flex-col w-full min-h-[420px] bg-origin-bg-lgrey rounded-xl">
         <div className="flex flex-row flex-shrink-0 items-center justify-between pl-6 pr-3 lg:pl-10 lg:pr-5 h-[80px]">
-          <h2 className="flex flex-shrink-0 ">{i18n('title')}</h2>
+          <h2 className="flex flex-shrink-0 ">
+            {i18n('title', { ns: 'swap' })}
+          </h2>
           <SettingsMenu
             i18n={i18n}
             onChange={onChangeSettings}

@@ -73,7 +73,7 @@ const SwapOutputValue = ({
       <div className="flex flex-col flex-shrink-0 space-y-4 items-end w-[50%]">
         <div className="flex flex-row space-x-4 items-center">
           <span className="text-sm lg:text-base text-origin-dimmed">
-            {i18n('balance')}:{' '}
+            {i18n('balance', { ns: 'swap' })}:{' '}
             {estimatedTokenBalance
               ? parseFloat(estimatedTokenBalance).toFixed(6)
               : '-'}
@@ -86,7 +86,7 @@ const SwapOutputValue = ({
         />
         {estimatedMinimumAmount ? (
           <span className="text-origin-dimmed text-sm">
-            {i18n('minReceived')}:{' '}
+            {i18n('minReceived', { ns: 'swap' })}:{' '}
             {estimatedMinimumAmount
               ? parseFloat(estimatedMinimumAmount).toFixed(6)
               : '-'}

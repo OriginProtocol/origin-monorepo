@@ -3,7 +3,7 @@ import { getStaticPaths, makeStaticProps } from '../../lib/getStatic';
 import { useTranslation } from 'next-i18next';
 
 const History = () => {
-  const { t } = useTranslation('wrap');
+  const { t } = useTranslation(['common', 'history']);
   return (
     <ErrorBoundary>
       <TransactionHistory i18n={t} />

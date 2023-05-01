@@ -1,16 +1,14 @@
 import { ErrorBoundary, WrapToken } from '@originprotocol/ui';
 import { useTranslation } from 'next-i18next';
 import { contracts } from '@originprotocol/web3';
+import { useEthUsdPrice } from '@originprotocol/hooks';
 import { getStaticPaths, makeStaticProps } from '../../lib/getStatic';
 import { STORED_WRAPPED_LS_KEY } from '../../src/constants';
-import { useEthUsdPrice } from '@originprotocol/hooks';
 
 const Wrap = () => {
-  const { t } = useTranslation('wrap');
-
+  const { t } = useTranslation(['common', 'wrap']);
   // Get current ETH in USD
   const [{ formatted: usdConversionPrice }] = useEthUsdPrice();
-
   return (
     <ErrorBoundary>
       <WrapToken

@@ -5,7 +5,6 @@ import {
   useNetwork,
   usePrepareContractWrite,
   useWaitForTransaction,
-  Chain,
   useSwitchNetwork,
 } from '@originprotocol/hooks';
 import { parseUnits, MaxUint256 } from '@originprotocol/utils';
@@ -142,13 +141,25 @@ const WrappedActions = ({
         >
           {(() => {
             if (allowanceWriteIsLoading) {
-              return i18n('approval.PENDING', translationContext);
+              return i18n('approval.PENDING', {
+                ns: 'wrap',
+                ...translationContext,
+              });
             } else if (allowanceWriteIsSubmitted) {
-              return i18n('approval.SUBMITTED', translationContext);
+              return i18n('approval.SUBMITTED', {
+                ns: 'wrap',
+                ...translationContext,
+              });
             } else if (allowanceWriteIsSuccess) {
-              return i18n('approval.SUCCESS', translationContext);
+              return i18n('approval.SUCCESS', {
+                ns: 'wrap',
+                ...translationContext,
+              });
             } else {
-              return i18n('approval.DEFAULT', translationContext);
+              return i18n('approval.DEFAULT', {
+                ns: 'wrap',
+                ...translationContext,
+              });
             }
           })()}
         </button>
@@ -156,7 +167,10 @@ const WrappedActions = ({
         !isPreparing &&
         error && (
           <span role="alert" className="text-origin-secondary text-sm">
-            {i18n(`errors.${error}`, translationContext)}
+            {i18n(`errors.${error}`, {
+              ns: 'wrap',
+              ...translationContext,
+            })}
           </span>
         )
       )}
@@ -174,13 +188,25 @@ const WrappedActions = ({
       >
         {(() => {
           if (swapWriteIsLoading) {
-            return i18n('wrap.PENDING', translationContext);
+            return i18n('wrap.PENDING', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSubmitted) {
-            return i18n('wrap.SUBMITTED', translationContext);
+            return i18n('wrap.SUBMITTED', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSuccess) {
-            return i18n('wrap.SUCCESS', translationContext);
+            return i18n('wrap.SUCCESS', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           } else {
-            return i18n('wrap.DEFAULT', translationContext);
+            return i18n('wrap.DEFAULT', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           }
         })()}
       </button>
@@ -246,7 +272,10 @@ const UnwrapActions = ({
     <>
       {!swapWriteIsLoading && error && (
         <span role="alert" className="text-origin-secondary text-sm">
-          {i18n(`errors.${error}`, translationContext)}
+          {i18n(`errors.${error}`, {
+            ns: 'wrap',
+            ...translationContext,
+          })}
         </span>
       )}
       <button
@@ -263,13 +292,25 @@ const UnwrapActions = ({
       >
         {(() => {
           if (swapWriteIsLoading) {
-            return i18n('unwrap.PENDING', translationContext);
+            return i18n('unwrap.PENDING', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSubmitted) {
-            return i18n('unwrap.SUBMITTED', translationContext);
+            return i18n('unwrap.SUBMITTED', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSuccess) {
-            return i18n('unwrap.SUCCESS', translationContext);
+            return i18n('unwrap.SUCCESS', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           } else {
-            return i18n('unwrap.DEFAULT', translationContext);
+            return i18n('unwrap.DEFAULT', {
+              ns: 'wrap',
+              ...translationContext,
+            });
           }
         })()}
       </button>
@@ -310,7 +351,7 @@ const WrapActions = ({
           switchNetwork?.(EXPECTED_CHAIN_ID);
         }}
       >
-        {i18n('switchNetwork', {
+        {i18n('wallet.switchNetwork', {
           networkName: chains.find(({ id }) => id === EXPECTED_CHAIN_ID)?.name,
         })}
       </button>
@@ -319,10 +360,10 @@ const WrapActions = ({
 
   return invalidInputValue || error ? (
     <div className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">
-      {i18n(
-        `errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`,
-        translationContext
-      )}
+      {i18n(`errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`, {
+        ns: 'wrap',
+        ...translationContext,
+      })}
     </div>
   ) : isWrap ? (
     <WrappedActions

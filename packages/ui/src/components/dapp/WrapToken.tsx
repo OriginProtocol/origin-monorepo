@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { BigNumber } from 'ethers';
 import dynamic from 'next/dynamic';
 import {
@@ -11,6 +11,10 @@ import { findTokenByAddress, formatWeiBalance } from '@originprotocol/utils';
 import { SWAP_TYPES } from '../../constants';
 import ExternalCTA from '../core/ExternalCTA';
 import WrapForm from './WrapForm';
+
+const Connect = dynamic(() => import('../core/Connect'), {
+  ssr: false,
+});
 
 const WrapActions = dynamic(() => import('./WrapActions'), {
   ssr: false,
@@ -40,7 +44,7 @@ const WrapToken = ({
   storageKey,
   usdConversionPrice,
 }: WrapTokenProps) => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [swap, setSwap] = useState({
     mode: SWAP_TYPES.WRAP,
@@ -167,16 +171,23 @@ const WrapToken = ({
         onSetMax={onSetMax}
         conversion={usdConversionPrice}
       />
-      <WrapActions
-        address={address}
-        i18n={i18n}
-        swap={swap}
-        selectedToken={selectedToken}
-        estimatedToken={estimatedToken}
-        wrappedContract={wrappedToken}
-        onSuccess={onSuccess}
-        onRefresh={onRefresh}
-      />
+      {isConnected ? (
+        <WrapActions
+          address={address}
+          i18n={i18n}
+          swap={swap}
+          selectedToken={selectedToken}
+          estimatedToken={estimatedToken}
+          wrappedContract={wrappedToken}
+          onSuccess={onSuccess}
+          onRefresh={onRefresh}
+        />
+      ) : (
+        <Connect
+          i18n={i18n}
+          className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
+        />
+      )}
     </div>
   );
 };

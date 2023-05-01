@@ -90,7 +90,7 @@ const EstimateView = ({
           </span>
           {hasEstimate && (
             <span className="hidden lg:flex text-origin-dimmed text-sm relative top-[4px]">
-              ({i18n('estimate')})
+              ({i18n('estimate', { ns: 'swap' })})
             </span>
           )}
         </div>
@@ -102,7 +102,10 @@ const EstimateView = ({
           <h4 className="text-xl font-header text-[#FF4E4E]">{diff}%</h4>
         ) : !hasEstimate || error ? (
           <h4 className="font-header text-[#FF4E4E]">
-            {i18n(`errors.${error || 'NO_ESTIMATES'}`, translationContext)}
+            {i18n(`errors.${error || 'NO_ESTIMATES'}`, {
+              ns: 'swap',
+              ...translationContext,
+            })}
           </h4>
         ) : null}
       </div>
@@ -110,10 +113,12 @@ const EstimateView = ({
         {hasEstimate ? (
           <div className="flex flex-row">
             <span className="text-origin-dimmed min-w-[150px] text-sm">
-              ≈{formatUSD(valueInUsd - gasCostUsd)} {i18n('afterFees')}
+              ≈{formatUSD(valueInUsd - gasCostUsd)}{' '}
+              {i18n('afterFees', { ns: 'swap' })}
             </span>
             <span className="text-origin-dimmed min-w-[150px] text-sm">
-              {i18n('effectivePrice')}: {formatUSD(effectivePrice || 0)}
+              {i18n('effectivePrice', { ns: 'swap' })}:{' '}
+              {formatUSD(effectivePrice || 0)}
             </span>
           </div>
         ) : (
@@ -169,7 +174,9 @@ const SwapRoutes = ({
 
   return (
     <div className="flex flex-col w-full bg-origin-bg-lgrey rounded-xl p-4 lg:p-10 space-y-3 lg:space-y-6">
-      <h3 className="flex flex-shrink-0 items-center">{i18n('swapRoutes')}</h3>
+      <h3 className="flex flex-shrink-0 items-center">
+        {i18n('swapRoutes', { ns: 'swap', ...translationContext })}
+      </h3>
       {isLoadingEstimate ? (
         <LoadingEstimate />
       ) : (

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useClickAway } from 'react-use';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import {
   shortenAddress,
   formatUnits,
@@ -14,9 +15,12 @@ import {
   useNetwork,
 } from '@originprotocol/hooks';
 import WalletAvatar, { jsNumberForAddress } from 'react-jazzicon';
-import { useWeb3Modal } from '@web3modal/react';
 import { orderBy } from 'lodash';
 import TokenImage from '../core/TokenImage';
+
+const Connect = dynamic(() => import('../core/Connect'), {
+  ssr: false,
+});
 
 type UserActivityProps = {
   i18n: any;
@@ -237,7 +241,6 @@ type WalletDisplayProps = {
 const WalletDisplay = ({ i18n, tokens }: WalletDisplayProps) => {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { open } = useWeb3Modal();
   return isConnected ? (
     <>
       <UserMenu
@@ -249,12 +252,7 @@ const WalletDisplay = ({ i18n, tokens }: WalletDisplayProps) => {
       <UserActivity i18n={i18n} />
     </>
   ) : (
-    <button
-      onClick={() => open()}
-      className="flex items-center h-[44px] px-6 bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-full"
-    >
-      {i18n('wallet.connect')}
-    </button>
+    <Connect i18n={i18n} />
   );
 };
 

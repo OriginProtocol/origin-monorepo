@@ -6,7 +6,6 @@ import {
   useSwitchNetwork,
   usePrepareContractWrite,
   useWaitForTransaction,
-  Chain,
 } from '@originprotocol/hooks';
 import { parseUnits, MaxUint256 } from '@originprotocol/utils';
 import { SWAP_TYPES } from '../../constants';
@@ -141,13 +140,25 @@ const MintableActions = ({
         >
           {(() => {
             if (allowanceWriteIsLoading) {
-              return i18n('approval.PENDING', translationContext);
+              return i18n('approval.PENDING', {
+                ns: 'swap',
+                ...translationContext,
+              });
             } else if (allowanceWriteIsSubmitted) {
-              return i18n('approval.SUBMITTED', translationContext);
+              return i18n('approval.SUBMITTED', {
+                ns: 'swap',
+                ...translationContext,
+              });
             } else if (allowanceWriteIsSuccess) {
-              return i18n('approval.SUCCESS', translationContext);
+              return i18n('approval.SUCCESS', {
+                ns: 'swap',
+                ...translationContext,
+              });
             } else {
-              return i18n('approval.DEFAULT', translationContext);
+              return i18n('approval.DEFAULT', {
+                ns: 'swap',
+                ...translationContext,
+              });
             }
           })()}
         </button>
@@ -155,7 +166,10 @@ const MintableActions = ({
         !isPreparing &&
         error && (
           <span role="alert" className="text-origin-secondary text-sm">
-            {i18n(`errors.${error}`, translationContext)}
+            {i18n(`errors.${error}`, {
+              ns: 'swap',
+              ...translationContext,
+            })}
           </span>
         )
       )}
@@ -173,13 +187,25 @@ const MintableActions = ({
       >
         {(() => {
           if (swapWriteIsLoading) {
-            return i18n('swap.PENDING', translationContext);
+            return i18n('swap.PENDING', {
+              ns: 'swap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSubmitted) {
-            return i18n('swap.SUBMITTED', translationContext);
+            return i18n('swap.SUBMITTED', {
+              ns: 'swap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSuccess) {
-            return i18n('swap.SUCCESS', translationContext);
+            return i18n('swap.SUCCESS', {
+              ns: 'swap',
+              ...translationContext,
+            });
           } else {
-            return i18n('swap.DEFAULT', translationContext);
+            return i18n('swap.DEFAULT', {
+              ns: 'swap',
+              ...translationContext,
+            });
           }
         })()}
       </button>
@@ -239,7 +265,10 @@ const RedeemActions = ({
     <>
       {error && (
         <span role="alert" className="text-origin-secondary text-sm">
-          {i18n(`errors.${error}`, translationContext)}
+          {i18n(`errors.${error}`, {
+            ns: 'swap',
+            ...translationContext,
+          })}
         </span>
       )}
       <button
@@ -256,13 +285,25 @@ const RedeemActions = ({
       >
         {(() => {
           if (swapWriteIsLoading) {
-            return i18n('redeem.PENDING', translationContext);
+            return i18n('redeem.PENDING', {
+              ns: 'swap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSubmitted) {
-            return i18n('redeem.SUBMITTED', translationContext);
+            return i18n('redeem.SUBMITTED', {
+              ns: 'swap',
+              ...translationContext,
+            });
           } else if (snapWriteIsSuccess) {
-            return i18n('redeem.SUCCESS', translationContext);
+            return i18n('redeem.SUCCESS', {
+              ns: 'swap',
+              ...translationContext,
+            });
           } else {
-            return i18n('redeem.DEFAULT', translationContext);
+            return i18n('redeem.DEFAULT', {
+              ns: 'swap',
+              ...translationContext,
+            });
           }
         })()}
       </button>
@@ -307,7 +348,7 @@ const SwapActions = ({
           switchNetwork?.(EXPECTED_CHAIN_ID);
         }}
       >
-        {i18n('switchNetwork', {
+        {i18n('wallet.switchNetwork', {
           networkName: chains.find(({ id }) => id === EXPECTED_CHAIN_ID)?.name,
         })}
       </button>
@@ -316,10 +357,10 @@ const SwapActions = ({
 
   return invalidInputValue || error ? (
     <div className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">
-      {i18n(
-        `errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`,
-        translationContext
-      )}
+      {i18n(`errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`, {
+        ns: 'swap',
+        ...translationContext,
+      })}
     </div>
   ) : isMint ? (
     <MintableActions
