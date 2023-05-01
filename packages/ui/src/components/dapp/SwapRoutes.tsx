@@ -213,7 +213,15 @@ const SwapRoutes = ({
                 onClick={() => setIsShowingMore((prev) => !prev)}
               >
                 <span>
-                  {isShowingMore ? i18n('showLess') : i18n('showMore')}
+                  {isShowingMore
+                    ? i18n('showLess', {
+                        ns: 'swap',
+                        ...translationContext,
+                      })
+                    : i18n('showMore', {
+                        ns: 'swap',
+                        ...translationContext,
+                      })}
                 </span>
                 <Image
                   className={cx('relative top-[2px]', {
