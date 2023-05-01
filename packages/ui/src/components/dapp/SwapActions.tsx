@@ -133,7 +133,7 @@ const MintableActions = ({
     <div className="flex flex-col space-y-4">
       {!hasProvidedAllowance ? (
         <button
-          className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
+          className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
           onClick={() => {
             allowanceWrite?.();
           }}
@@ -175,7 +175,7 @@ const MintableActions = ({
       )}
       <button
         className={cx(
-          'flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl',
+          'flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl',
           {
             'opacity-50 cursor-not-allowed': swapWriteDisabled,
           }
@@ -273,7 +273,7 @@ const RedeemActions = ({
       )}
       <button
         className={cx(
-          'flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl',
+          'flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl',
           {
             'opacity-50 cursor-not-allowed': swapWriteDisabled,
           }
@@ -343,7 +343,7 @@ const SwapActions = ({
   if (chain?.id !== EXPECTED_CHAIN_ID) {
     return (
       <button
-        className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
+        className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
         onClick={() => {
           switchNetwork?.(EXPECTED_CHAIN_ID);
         }}
@@ -356,7 +356,7 @@ const SwapActions = ({
   }
 
   return invalidInputValue || error ? (
-    <div className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">
+    <div className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">
       {i18n(`errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`, {
         ns: 'swap',
         ...translationContext,

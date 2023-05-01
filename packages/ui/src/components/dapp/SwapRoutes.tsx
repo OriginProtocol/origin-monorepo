@@ -111,12 +111,12 @@ const EstimateView = ({
       </div>
       <div className="flex flex-col lg:flex-row w-full justify-between space-y-3">
         {hasEstimate ? (
-          <div className="flex flex-row">
-            <span className="text-origin-dimmed min-w-[150px] text-sm">
+          <div className="flex flex-row space-x-1">
+            <span className="text-origin-dimmed min-w-[120px] text-sm text-left">
               ≈{formatUSD(valueInUsd - gasCostUsd)}{' '}
               {i18n('afterFees', { ns: 'swap' })}
             </span>
-            <span className="text-origin-dimmed min-w-[150px] text-sm">
+            <span className="text-origin-dimmed min-w-[180px] text-sm">
               {i18n('effectivePrice', { ns: 'swap' })}:{' '}
               {formatUSD(effectivePrice || 0)}
             </span>
