@@ -20,7 +20,7 @@ const canUseOUSDVault = ({ mode, fromToken, toToken }) => {
 };
 
 const Swap = () => {
-  const { t } = useTranslation('swap');
+  const { t } = useTranslation(['common', 'swap']);
   return (
     <ErrorBoundary>
       <TokenSwap

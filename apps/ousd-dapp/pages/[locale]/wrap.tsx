@@ -5,7 +5,7 @@ import { getStaticPaths, makeStaticProps } from '../../lib/getStatic';
 import { STORED_WRAPPED_LS_KEY } from '../../src/constants';
 
 const Wrap = () => {
-  const { t } = useTranslation('wrap');
+  const { t } = useTranslation(['common', 'wrap']);
   return (
     <ErrorBoundary>
       <WrapToken
