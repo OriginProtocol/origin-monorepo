@@ -13,6 +13,7 @@
   "best": "Best",
   "showMore": "show more",
   "showLess": "hide",
+  "switchNetwork": "Switch network to {{networkName}}",
   "redeem": {
     "DEFAULT": "Swap",
     "PENDING": "Confirm swap in wallet...",

@@ -20,7 +20,8 @@
   "wallet": {
     "connect": "Connect",
     "disconnect": "Disconnect",
-    "account": "Account"
+    "account": "Account",
+    "connected": "Connected to"
   },
   "portfolio": {
     "title": "Portfolio",

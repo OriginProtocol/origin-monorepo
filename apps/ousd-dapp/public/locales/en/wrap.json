@@ -8,6 +8,7 @@
   "estimate": "estimate",
   "minReceived": "Min. received",
   "isLoading": "Loading...",
+  "switchNetwork": "Switch network to {{networkName}}",
   "unwrap": {
     "DEFAULT": "Unwrap",
     "PENDING": "Confirm unwrap in wallet...",

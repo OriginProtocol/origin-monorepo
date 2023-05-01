@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import cx from 'classnames';
 import {
   useContractWrite,
+  useNetwork,
+  useSwitchNetwork,
   usePrepareContractWrite,
   useWaitForTransaction,
+  Chain,
 } from '@originprotocol/hooks';
-import { pick } from 'lodash';
 import { parseUnits, MaxUint256 } from '@originprotocol/utils';
 import { SWAP_TYPES } from '../../constants';
 
@@ -54,12 +56,14 @@ const MintableActions = ({
     selectedEstimate || {};
   const weiValue = parseUnits(String(value), selectedToken?.decimals || 18);
 
-  const { config: allowanceWriteConfig } = usePrepareContractWrite({
-    ...pick(selectedToken, 'address', 'abi'),
-    functionName: 'approve',
-    args: [contract?.address, weiValue || MaxUint256],
-    chainId: EXPECTED_CHAIN_ID,
-  });
+  const { config: allowanceWriteConfig, error: allowanceWriteError } =
+    usePrepareContractWrite({
+      address: selectedToken?.address,
+      abi: selectedToken?.abi,
+      functionName: 'approve',
+      args: [contract?.address, weiValue || MaxUint256],
+      chainId: EXPECTED_CHAIN_ID,
+    });
 
   const {
     data: allowanceWriteData,
@@ -276,6 +280,9 @@ const SwapActions = ({
   onRefresh,
   isLoadingEstimate,
 }: SwapActionsProps) => {
+  const { chain } = useNetwork();
+  const { chains, switchNetwork } = useSwitchNetwork();
+
   const { mode, selectedEstimate, value } = swap || {};
   const { error } = selectedEstimate || {};
 
@@ -291,6 +298,21 @@ const SwapActions = ({
     sourceTokenName: selectedToken?.symbol,
     targetTokenName: estimatedToken?.symbol,
   };
+
+  if (chain?.id !== EXPECTED_CHAIN_ID) {
+    return (
+      <button
+        className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
+        onClick={() => {
+          switchNetwork?.(EXPECTED_CHAIN_ID);
+        }}
+      >
+        {i18n('switchNetwork', {
+          networkName: chains.find(({ id }) => id === EXPECTED_CHAIN_ID)?.name,
+        })}
+      </button>
+    );
+  }
 
   return invalidInputValue || error ? (
     <div className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">

@@ -11,10 +11,11 @@ import {
   useAccount,
   useDisconnect,
   useTokenBalances,
+  useNetwork,
 } from '@originprotocol/hooks';
 import WalletAvatar, { jsNumberForAddress } from 'react-jazzicon';
 import { useWeb3Modal } from '@web3modal/react';
-import orderBy from 'lodash/orderBy';
+import { orderBy } from 'lodash';
 import TokenImage from '../core/TokenImage';
 
 type UserActivityProps = {
@@ -82,6 +83,14 @@ interface UserMenuDropdownProps {
   onClose: any;
 }
 
+const providerNameIconMap = {
+  MetaMask: 'metamask.svg',
+  Ledger: 'ledger.svg',
+  Exodus: 'exodus.svg',
+  MyEtherWallet: 'myetherwallet.svg',
+  WalletConnect: 'walletconnect.svg',
+};
+
 const UserMenuDropdown = ({
   address,
   i18n,
@@ -89,6 +98,7 @@ const UserMenuDropdown = ({
   onDisconnect,
   onClose,
 }: UserMenuDropdownProps) => {
+  const { chain } = useNetwork();
   const providerName = getProviderName();
   const ref = useRef(null);
 
@@ -99,13 +109,22 @@ const UserMenuDropdown = ({
   });
 
   const { data, isError, isLoading } = useTokenBalances({ address, tokens });
+
+  // @ts-ignore
+  const providerIcon = providerNameIconMap?.[providerName];
+
   return (
     <div
       ref={ref}
       className="absolute top-[50px] right-0 flex flex-col w-[350px] bg-origin-bg-lgrey z-[9999] shadow-xl border border-[1px] border-origin-bg-dgrey rounded-xl"
     >
       <div className="flex flex-row justify-between px-6 h-[80px] items-center">
-        <h2 className="flex flex-shrink-0">{i18n('wallet.account')}</h2>
+        <div className="flex flex-col space-y1">
+          <h2 className="flex flex-shrink-0">{i18n('wallet.account')}</h2>
+          <span className="text-sm text-origin-dimmed">{`${i18n(
+            'wallet.connected'
+          )} ${chain?.name}`}</span>
+        </div>
         <button
           className="h-[28px] bg-origin-white bg-opacity-20 rounded-full px-4 text-sm hover:bg-opacity-10 duration-100 ease-in"
           onClick={onDisconnect}
@@ -117,10 +136,9 @@ const UserMenuDropdown = ({
       <div className="flex flex-col justify-center h-full space-y-4 p-6">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center space-x-4">
-            {/* Add other wallet icons and add back in */}
-            {providerName === 'metamask' && (
+            {providerIcon && (
               <Image
-                src={`/wallets/${providerName}.png`}
+                src={`/wallets/${providerIcon}`}
                 height={24}
                 width={24}
                 alt={`${providerName} wallet`}
@@ -151,9 +169,9 @@ const UserMenuDropdown = ({
         ) : (
           orderBy(
             data,
-            ({ balanceOf }) => formatWeiBalance(balanceOf),
+            ({ balanceOf }: any) => formatWeiBalance(balanceOf),
             'desc'
-          ).map(({ name, symbol, balanceOf, logoSrc }) => (
+          ).map(({ name, symbol, balanceOf, logoSrc }: any) => (
             <div
               key={name}
               className="flex flex-row items-center space-x-3 text-lg"

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BigNumber } from 'ethers';
+import dynamic from 'next/dynamic';
 import {
   useAccount,
   usePersistState,
@@ -10,7 +11,10 @@ import { findTokenByAddress, formatWeiBalance } from '@originprotocol/utils';
 import { SWAP_TYPES } from '../../constants';
 import ExternalCTA from '../core/ExternalCTA';
 import WrapForm from './WrapForm';
-import WrapActions from './WrapActions';
+
+const WrapActions = dynamic(() => import('./WrapActions'), {
+  ssr: false,
+});
 
 type WrapTokenProps = {
   i18n: any;

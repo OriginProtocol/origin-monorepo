@@ -18,7 +18,10 @@ export {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
+  useNetwork,
+  useSwitchNetwork,
   erc20ABI,
+  Chain,
 } from 'wagmi';
 export { default as useAutoConnect } from './useAutoConnect';
 export { default as useTokenAllowances } from './useTokenAllowances';

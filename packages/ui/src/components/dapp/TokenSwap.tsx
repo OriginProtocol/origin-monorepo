@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { BigNumber } from 'ethers';
 import { values } from 'lodash';
+import dynamic from 'next/dynamic';
 import {
   useAccount,
   useTokenBalances,
@@ -11,7 +12,10 @@ import { formatWeiBalance, findTokenBySymbol } from '@originprotocol/utils';
 import { SWAP_TYPES } from '../../constants';
 import SwapForm from './SwapForm';
 import SwapRoutes from './SwapRoutes';
-import SwapActions from './SwapActions';
+
+const SwapActions = dynamic(() => import('./SwapActions'), {
+  ssr: false,
+});
 
 type TokenSwapProps = {
   i18n: any;
