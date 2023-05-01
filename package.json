@@ -7,7 +7,7 @@
     "dev:oeth-dapp": "nx serve oeth-dapp",
     "dev:ousd-dapp": "nx serve ousd-dapp",
     "generate-package-types": "tsc --p tsconfig.base.json",
-    "build": "sh deployment/build-frontend.sh",
+    "heroku-postbuild": "nx build $PROJECT_NAME --prod",
     "start": "sh deployment/start-frontend.sh",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
