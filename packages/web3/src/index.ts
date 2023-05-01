@@ -1,7 +1,7 @@
 type ContractConfig = {
   name: string;
-  address: `0x${string}`;
   abi: any;
+  address: `0x${string}`;
   decimals?: number;
   symbol?: string;
 };
@@ -214,15 +214,25 @@ export const contracts: Contracts = {
       address: '0x75Bc09f72db1663Ed35925B89De2b5212b9b6Cb3',
       abi: null,
     },
+    CurveRegistryExchange: {
+      name: 'Curve',
+      address: '0x0',
+      abi: require('../generated/CurveRegistryExchange.json'),
+    },
     CurveAddressProvider: {
-      name: 'CurveAddressProvider',
+      name: 'Curve',
       address: '0x0000000022d53366457f9d5e68ec105046fc4383',
       abi: require('../generated/CurveAddressProvider.json'),
     },
     CurveOUSDMetaPool: {
-      name: 'CurveOUSDMetaPool',
+      name: 'Curve.fi Factory USD Metapool',
       address: '0x87650D7bbfC3A9F10587d7778206671719d9910D',
       abi: require('../generated/CurveOUSDMetaPool.json'),
+    },
+    CurveOETHMetaPool: {
+      name: 'Curve.fi Factory Pool',
+      address: '0x94b17476a93b3262d87b9a326965d1e91f9c13e7',
+      abi: require('../generated/CurveOETHMetaPool.json'),
     },
     CurveGaugeController: {
       name: 'CurveGaugeController',

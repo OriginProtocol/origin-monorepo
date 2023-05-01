@@ -39,7 +39,9 @@
     "REDEEM_TOO_LOW": "Redeem amount lower than minimum, adjust tolerance up",
     "NO_ESTIMATES": "No Estimates",
     "UNSUPPORTED": "Unsupported",
-    "NOT_ENOUGH_LIQUIDITY": "Not enough liquidity"
+    "NOT_ENOUGH_LIQUIDITY": "Not enough liquidity",
+    "NO_LIQUIDITY_POOL": "No liquidity pool",
+    "BAD_SWAP_RATIO": "Bad swap ration"
   },
   "settings": {
     "title": "Settings",

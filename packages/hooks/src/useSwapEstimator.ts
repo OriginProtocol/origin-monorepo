@@ -5,8 +5,9 @@ import {
   formatUnits,
   formatWeiBalance,
 } from '@originprotocol/utils';
+import { contracts } from '@originprotocol/web3';
 import { useDebouncedCallback } from 'use-debounce';
-import { zipObject, reduce, orderBy } from 'lodash';
+import { zipObject, reduce, orderBy, pick } from 'lodash';
 
 type UseSwapEstimatorProps = {
   address: `0x${string}` | string | undefined;
@@ -41,6 +42,58 @@ interface EstimateError extends Error {
   };
 }
 
+const curveFactoryMiniAbi = [
+  {
+    stateMutability: 'view',
+    type: 'function',
+    name: 'get_underlying_coins',
+    inputs: [
+      {
+        name: '_pool',
+        type: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'address[8]',
+      },
+    ],
+  },
+];
+
+const curveMetapoolMiniAbi = [
+  {
+    name: 'exchange_underlying',
+    outputs: [
+      {
+        type: 'uint256',
+        name: '',
+      },
+    ],
+    inputs: [
+      {
+        type: 'int128',
+        name: 'i',
+      },
+      {
+        type: 'int128',
+        name: 'j',
+      },
+      {
+        type: 'uint256',
+        name: 'dx',
+      },
+      {
+        type: 'uint256',
+        name: 'min_dy',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
+
 const handleError = (e: EstimateError, contract: any) => {
   console.error(e);
 
@@ -69,6 +122,11 @@ const handleError = (e: EstimateError, contract: any) => {
   ) {
     return {
       error: 'NOT_ENOUGH_LIQUIDITY',
+      contract,
+    };
+  } else if (errorMessage.includes('No available market')) {
+    return {
+      error: 'NO_LIQUIDITY_POOL',
       contract,
     };
   }
@@ -690,10 +748,200 @@ const estimateCurveSwap = async ({
       contract: config.contract,
     };
   }
-  return {
-    error: 'UNIMPLEMENTED',
-    contract: config.contract,
-  };
+
+  try {
+    const provider = new ethers.providers.JsonRpcProvider(providerRpc);
+
+    const signer = provider.getSigner(address);
+
+    const feeData = await provider.getFeeData();
+
+    const curveAddressContract = new ethers.Contract(
+      config.contract.address,
+      config.contract.abi,
+      provider
+    );
+
+    const fromTokenContract = new ethers.Contract(
+      fromToken.address,
+      fromToken.abi,
+      provider
+    );
+
+    const [registryExchangeAddress, fromTokenDecimals] = await Promise.all([
+      curveAddressContract['get_address'](2, { gasLimit: 100000 }), // Manual gas for ethers issue w/ vyper
+      fromTokenContract['decimals'](),
+    ]);
+
+    console.log(registryExchangeAddress, fromTokenDecimals);
+
+    const curveRegistryExchange = new ethers.Contract(
+      registryExchangeAddress,
+      contracts['mainnet']['CurveRegistryExchange'].abi,
+      provider
+    );
+
+    let poolContract;
+
+    if (
+      toToken.symbol === contracts['mainnet']['OUSD'].symbol ||
+      fromToken.symbol === contracts['mainnet']['OUSD'].symbol
+    ) {
+      poolContract = {
+        address: contracts['mainnet']['CurveOUSDMetaPool']?.address,
+        name: contracts['mainnet']['CurveOUSDMetaPool']?.name,
+        abi: curveMetapoolMiniAbi,
+        functionName: 'exchange_underlying',
+      };
+    } else if (
+      toToken.symbol === contracts['mainnet']['OETH'].symbol ||
+      fromToken.symbol === contracts['mainnet']['OETH'].symbol
+    ) {
+      poolContract = {
+        address: contracts['mainnet']['CurveOETHMetaPool']?.address,
+        name: contracts['mainnet']['CurveOETHMetaPool']?.name,
+        abi: curveMetapoolMiniAbi,
+        functionName: 'exchange',
+      };
+    }
+
+    if (!poolContract || !poolContract.address || !poolContract.abi) {
+      return {
+        error: 'NO_LIQUIDITY_POOL',
+        contract: poolContract,
+        fromToken,
+      };
+    }
+
+    const liquidityPoolContract = new ethers.Contract(
+      poolContract.address,
+      poolContract.abi,
+      provider
+    );
+
+    const fromTokenValue = parseUnits(String(value), fromTokenDecimals);
+
+    let receiveAmount;
+
+    try {
+      receiveAmount = await curveRegistryExchange.get_exchange_amount(
+        poolContract.address,
+        fromToken.address,
+        toToken.address,
+        fromTokenValue,
+        {
+          gasLimit: 1000000,
+        }
+      );
+    } catch (e) {
+      return handleError(e as EstimateError, poolContract);
+    }
+
+    const swapRatio =
+      parseFloat(formatWeiBalance(fromTokenValue.toString())) /
+      parseFloat(formatWeiBalance(receiveAmount.toString()));
+
+    if (swapRatio > 1.2) {
+      return {
+        error: 'BAD_SWAP_RATIO',
+        contract: poolContract,
+        fromToken,
+      };
+    }
+
+    const fromTokenAllowance = await fromTokenContract['allowance'](
+      address,
+      poolContract.address
+    );
+
+    const minimumAmount = fromTokenValue.sub(
+      fromTokenValue.mul(settings?.tolerance * 100).div(10000)
+    );
+
+    const hasProvidedAllowance = fromTokenAllowance.gte(fromTokenValue);
+
+    // Needs approvals, get estimates
+    if (!hasProvidedAllowance) {
+      /* This estimate is from the few ones observed on the mainnet:
+       * https://etherscan.io/tx/0x3ff7178d8be668649928d86863c78cd249224211efe67f23623017812e7918bb
+       * https://etherscan.io/tx/0xbf033ffbaf01b808953ca1904d3b0110b50337d60d89c96cd06f3f9a6972d3ca
+       * https://etherscan.io/tx/0x77d98d0307b53e81f50b39132e038a1c6ef87a599a381675ce44038515a04738
+       * https://etherscan.io/tx/0xbce1a2f1e76d4b4f900b3952f34f5f53f8be4a65ccff348661d19b9a3827aa04
+       *
+       */
+      const gasLimit = BigNumber.from(350000);
+      const approveGasLimit = await fromTokenContract
+        .connect(signer)
+        .estimateGas['approve'](poolContract.address, fromTokenValue);
+      return {
+        contract: poolContract,
+        gasLimit: gasLimit.add(approveGasLimit),
+        receiveAmount,
+        minimumAmount,
+        hasProvidedAllowance,
+        feeData,
+        value,
+        fromToken,
+        toToken,
+      };
+    }
+
+    const factoryAddress = await curveAddressContract['get_address'](3, {
+      gasLimit: 100000,
+    }); // Manual gas for ethers issue w/ vyper
+
+    const factoryContract = new ethers.Contract(
+      factoryAddress,
+      curveFactoryMiniAbi,
+      provider
+    );
+
+    const underlyingCoins = await factoryContract.get_underlying_coins(
+      poolContract.address
+    );
+
+    const curveUnderlyingCoins = underlyingCoins.map((address: string) =>
+      address?.toLowerCase()
+    );
+
+    const fromIndexFound = curveUnderlyingCoins.indexOf(
+      fromToken.address.toLowerCase()
+    );
+
+    const toIndexFound = curveUnderlyingCoins.indexOf(
+      toToken.address.toLowerCase()
+    );
+
+    const gasLimit = await liquidityPoolContract
+      .connect(signer)
+      .estimateGas[poolContract.functionName](
+        fromIndexFound,
+        toIndexFound,
+        fromTokenValue,
+        minimumAmount
+      );
+
+    return {
+      contract: poolContract,
+      gasLimit,
+      receiveAmount,
+      minimumAmount,
+      hasProvidedAllowance,
+      feeData,
+      prepareParams: {
+        address: poolContract.address,
+        abi: poolContract.abi,
+        functionName: poolContract.functionName,
+        args: [fromIndexFound, toIndexFound, fromTokenValue, minimumAmount],
+        staleTime: 2_000,
+      },
+      value,
+      fromToken,
+      toToken,
+    };
+  } catch (e) {
+    return handleError(e as EstimateError, config.contract);
+  }
 };
 
 const estimateSushiSwap = async ({

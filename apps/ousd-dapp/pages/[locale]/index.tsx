@@ -19,6 +19,14 @@ const canUseOUSDVault = ({ mode, fromToken, toToken }) => {
   }
 };
 
+const canUseCurve = ({ mode, toToken, fromToken }) => {
+  // Cant be Redeem & Mix, ETH
+  return (
+    !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol)) &&
+    !['ETH'].includes(fromToken?.symbol)
+  );
+};
+
 const Swap = () => {
   const { t } = useTranslation(['common', 'swap']);
   return (
@@ -31,6 +39,10 @@ const Swap = () => {
             contract: contracts.mainnet.VaultProxy,
             token: contracts.mainnet.OUSD,
             canEstimateSwap: canUseOUSDVault,
+          },
+          curve: {
+            contract: contracts.mainnet.CurveAddressProvider,
+            canEstimateSwap: canUseCurve,
           },
         }}
         supportedSwapTokens={[

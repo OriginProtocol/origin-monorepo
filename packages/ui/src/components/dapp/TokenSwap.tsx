@@ -127,11 +127,23 @@ const TokenSwap = ({
 
   const onSwapEstimates = (sortedGasEstimates: any) => {
     // Update estimates received, auto set the best one
-    setSwap((prev) => ({
-      ...prev,
-      selectedEstimate: sortedGasEstimates?.[0] || null,
-      estimates: sortedGasEstimates || [],
-    }));
+    setSwap((prev) => {
+      // Keep selected estimate if it exists
+      const previousEstimate =
+        prev?.selectedTokenSymbol === selectedTokenSymbol &&
+        prev?.estimatedTokenSymbol === estimatedTokenSymbol &&
+        prev?.selectedEstimate &&
+        sortedGasEstimates.find(
+          (estimate: any) =>
+            estimate?.contract?.address ===
+            prev?.selectedEstimate?.contract?.address
+        );
+      return {
+        ...prev,
+        selectedEstimate: previousEstimate || sortedGasEstimates?.[0] || null,
+        estimates: sortedGasEstimates || [],
+      };
+    });
   };
 
   // Watch for value changes to perform estimates

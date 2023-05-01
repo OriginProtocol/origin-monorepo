@@ -34,6 +34,14 @@ const canUseZapper = ({ mode, fromToken }) => {
   );
 };
 
+const canUseCurve = ({ mode, toToken, fromToken }) => {
+  // Cant be Redeem & Mix, ETH
+  return (
+    !(mode === 'REDEEM' && ['OETH_MIX'].includes(toToken?.symbol)) &&
+    !['ETH'].includes(fromToken?.symbol)
+  );
+};
+
 const Swap = () => {
   const { t } = useTranslation(['common', 'swap']);
 
@@ -54,6 +62,10 @@ const Swap = () => {
           zapper: {
             contract: contracts.mainnet.OETHZapper,
             canEstimateSwap: canUseZapper,
+          },
+          curve: {
+            contract: contracts.mainnet.CurveAddressProvider,
+            canEstimateSwap: canUseCurve,
           },
         }}
         supportedSwapTokens={[

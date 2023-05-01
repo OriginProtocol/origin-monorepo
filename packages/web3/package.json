@@ -2,6 +2,9 @@
   "name": "@originprotocol/web3",
   "version": "0.0.1",
   "type": "commonjs",
+  "scripts": {
+    "generate": "node --experimental-fetch ./packages/web3/scripts/generateABIs.ts"
+  },
   "dependencies": {},
   "devDependencies": {}
 }

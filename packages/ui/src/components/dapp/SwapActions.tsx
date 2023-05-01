@@ -130,7 +130,7 @@ const MintableActions = ({
     !swapWrite;
 
   return (
-    <>
+    <div className="flex flex-col space-y-4">
       {!hasProvidedAllowance ? (
         <button
           className="flex items-center justify-center w-full h-[72px] text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
@@ -209,7 +209,7 @@ const MintableActions = ({
           }
         })()}
       </button>
-    </>
+    </div>
   );
 };
 
