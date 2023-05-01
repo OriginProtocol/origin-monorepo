@@ -316,7 +316,7 @@ const estimateVaultMint = async ({
       gasLimit,
       receiveAmount,
       minimumAmount,
-      hasProvidedAllowance,
+      hasProvidedAllowance: true,
       feeData,
       prepareParams: {
         address: config.contract.address,
@@ -906,8 +906,6 @@ const estimateCurveSwap = async ({
       provider
     );
 
-    console.log(factoryAddress, poolContract.address);
-
     const underlyingCoins = await factoryContract.get_underlying_coins(
       poolContract.address
     );
@@ -915,11 +913,6 @@ const estimateCurveSwap = async ({
     const curveUnderlyingCoins = underlyingCoins.map((address: string) =>
       address?.toLowerCase()
     );
-
-    console.log({
-      underlyingCoins,
-      curveUnderlyingCoins,
-    });
 
     const swapRatio =
       parseFloat(formatWeiBalance(fromTokenValue.toString())) /
@@ -955,7 +948,7 @@ const estimateCurveSwap = async ({
       gasLimit,
       receiveAmount,
       minimumAmount,
-      hasProvidedAllowance,
+      hasProvidedAllowance: true,
       feeData,
       prepareParams: {
         address: poolContract.address,

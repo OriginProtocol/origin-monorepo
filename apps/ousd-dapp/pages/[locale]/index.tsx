@@ -19,13 +19,29 @@ const canUseOUSDVault = ({ mode, fromToken, toToken }) => {
   }
 };
 
-const canUseCurve = ({ mode, toToken, fromToken }) => {
+const canUseCurve = ({ mode, toToken }) => {
   // Cant be Redeem & Mix, ETH
-  return (
-    !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol)) &&
-    !['ETH'].includes(fromToken?.symbol) &&
-    !['ETH'].includes(toToken?.symbol)
-  );
+  return !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol));
+};
+
+const canUseFlipper = ({ mode, toToken }) => {
+  // Cant be Redeem & Mix, ETH
+  return !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol));
+};
+
+const canUseUniswapV3 = ({ mode, toToken }) => {
+  // Cant be Redeem & Mix, ETH
+  return !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol));
+};
+
+const canUseUniswapV2 = ({ mode, toToken }) => {
+  // Cant be Redeem & Mix, ETH
+  return !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol));
+};
+
+const canUseSushiSwap = ({ mode, toToken }) => {
+  // Cant be Redeem & Mix, ETH
+  return !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol));
 };
 
 const Swap = () => {
@@ -44,6 +60,22 @@ const Swap = () => {
           curve: {
             contract: contracts.mainnet.CurveAddressProvider,
             canEstimateSwap: canUseCurve,
+          },
+          flipper: {
+            contract: contracts.mainnet.Flipper,
+            canEstimateSwap: canUseFlipper,
+          },
+          uniswapV3: {
+            contract: contracts.mainnet.UniswapV3Router,
+            canEstimateSwap: canUseUniswapV3,
+          },
+          uniswapV2: {
+            contract: contracts.mainnet.UniswapV2Router,
+            canEstimateSwap: canUseUniswapV2,
+          },
+          sushiswap: {
+            contract: contracts.mainnet.SushiSwapRouter,
+            canEstimateSwap: canUseSushiSwap,
           },
         }}
         supportedSwapTokens={[

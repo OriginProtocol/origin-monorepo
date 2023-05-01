@@ -73,100 +73,100 @@ export const contracts: Contracts = {
       address: '0x7d82e86cf1496f9485a8ea04012afeb3c7489397',
       abi: require('../generated/RewardsSource.json'),
     },
-    optionalLockupDistributor: {
-      name: 'optionalLockupDistributor',
+    OptionalLockupDistributor: {
+      name: 'OptionalLockupDistributor',
       address: '0x7aE2334f12a449895AD21d4c255D9DE194fe986f',
-      abi: require('../generated/optionalLockupDistributor.json'),
+      abi: require('../generated/OptionalLockupDistributor.json'),
     },
-    mandatoryLockupDistributor: {
-      name: 'mandatoryLockupDistributor',
+    MandatoryLockupDistributor: {
+      name: 'MandatoryLockupDistributor',
       address: '0xD667091c2d1DCc8620f4eaEA254CdFB0a176718D',
-      abi: require('../generated/mandatoryLockupDistributor.json'),
+      abi: require('../generated/MandatoryLockupDistributor.json'),
     },
-    openOracle: {
-      name: 'openOracle',
+    OpenOracle: {
+      name: 'Open Oracle',
       address: '0x9b8eb8b3d6e2e0db36f41455185fef7049a35cae',
-      abi: require('../generated/openOracle.json'),
+      abi: require('../generated/OpenOracle.json'),
     },
-    sushiSwapRouter: {
-      name: 'sushiSwapRouter',
+    SushiSwapRouter: {
+      name: 'Sushi Swap',
       address: '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F',
-      abi: require('../generated/sushiSwapRouter.json'),
+      abi: require('../generated/SushiSwapRouter.json'),
     },
-    uniswapV2Router: {
-      name: 'uniswapV2Router',
+    UniswapV2Router: {
+      name: 'Uniswap V2',
       address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-      abi: require('../generated/uniswapV2Router.json'),
+      abi: require('../generated/UniswapV2Router.json'),
     },
-    uniswapDAI_ETH: {
-      name: 'uniswapDAI_ETH',
+    UniswapDAI_ETH: {
+      name: 'UniswapDAI_ETH',
       address: '0xa478c2975ab1ea89e8196811f51a7b7ade33eb11',
-      abi: require('../generated/uniswapDAI_ETH.json'),
+      abi: require('../generated/UniswapDAI_ETH.json'),
     },
-    uniswapUSDC_ETH: {
-      name: 'uniswapUSDC_ETH',
+    UniswapUSDC_ETH: {
+      name: 'UniswapUSDC_ETH',
       address: '0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc',
-      abi: require('../generated/uniswapUSDC_ETH.json'),
+      abi: require('../generated/UniswapUSDC_ETH.json'),
     },
-    uniswapUSDT_ETH: {
-      name: 'uniswapUSDT_ETH',
+    UniswapUSDT_ETH: {
+      name: 'UniswapUSDT_ETH',
       address: '0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852',
-      abi: require('../generated/uniswapUSDT_ETH.json'),
+      abi: require('../generated/UniswapUSDT_ETH.json'),
     },
-    uniswapV3Router: {
-      name: 'uniswapV3Router',
+    UniswapV3Router: {
+      name: 'Uniswap V3',
       address: '0xe592427a0aece92de3edee1f18e0157c05861564',
-      abi: require('../generated/uniswapV3Router.json'),
+      abi: require('../generated/UniswapV3Router.json'),
     },
-    uniswapV3Quoter: {
-      name: 'uniswapV3Quoter',
+    UniswapV3Quoter: {
+      name: 'Uniswap V3 Quoter',
       address: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
-      abi: require('../generated/uniswapV3Quoter.json'),
+      abi: require('../generated/UniswapV3Quoter.json'),
     },
-    uniswapV3OUSD_USDT: {
-      name: 'uniswapV3OUSD_USDT',
+    UniswapV3OUSD_USDT: {
+      name: 'UniswapV3OUSD_USDT',
       address: '0x129360c964e2e13910d603043f6287e5e9383374',
       abi: null,
     },
-    uniswapV3DAI_USDT: {
-      name: 'uniswapV3DAI_USDT',
+    UniswapV3DAI_USDT: {
+      name: 'UniswapV3DAI_USDT',
       address: '0x6f48eca74b38d2936b02ab603ff4e36a6c0e3a77',
       abi: null,
     },
-    uniswapV3USDC_USDT: {
-      name: 'uniswapV3USDC_USDT',
+    UniswapV3USDC_USDT: {
+      name: 'UniswapV3USDC_USDT',
       address: '0x7858e59e0c01ea06df3af3d20ac7b0003275d4bf',
-      abi: require('../generated/uniswapV3USDC_USDT.json'),
+      abi: require('../generated/UniswapV3USDC_USDT.json'),
     },
     Flipper: {
       name: 'Flipper',
       address: '0xcecaD69d7D4Ed6D52eFcFA028aF8732F27e08F70',
       abi: require('../generated/Flipper.json'),
     },
-    chainlinkUSDT_ETH: {
-      name: 'chainlinkUSDT_ETH',
+    ChainlinkUSDT_ETH: {
+      name: 'ChainlinkUSDT_ETH',
       address: '0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46',
-      abi: require('../generated/chainlinkUSDT_ETH.json'),
+      abi: require('../generated/ChainlinkUSDT_ETH.json'),
     },
-    chainlinkUSDC_ETH: {
-      name: 'chainlinkUSDC_ETH',
+    ChainlinkUSDC_ETH: {
+      name: 'ChainlinkUSDC_ETH',
       address: '0x986b5E1e1755e3C2440e960477f25201B0a8bbD4',
-      abi: require('../generated/chainlinkUSDC_ETH.json'),
+      abi: require('../generated/ChainlinkUSDC_ETH.json'),
     },
-    chainlinkDAI_ETH: {
-      name: 'chainlinkDAI_ETH',
+    ChainlinkDAI_ETH: {
+      name: 'ChainlinkDAI_ETH',
       address: '0x773616E4d11A78F511299002da57A0a94577F1f4',
-      abi: require('../generated/chainlinkDAI_ETH.json'),
+      abi: require('../generated/ChainlinkDAI_ETH.json'),
     },
-    chainlinkETH_USD: {
-      name: 'chainlinkETH_USD',
+    ChainlinkETH_USD: {
+      name: 'ChainlinkETH_USD',
       address: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
-      abi: require('../generated/chainlinkETH_USD.json'),
+      abi: require('../generated/ChainlinkETH_USD.json'),
     },
-    chainlinkFAST_GAS: {
-      name: 'chainlinkFAST_GAS',
+    ChainlinkFAST_GAS: {
+      name: 'ChainlinkFAST_GAS',
       address: '0x169E633A2D1E6c10dD91238Ba11c4A708dfEF37C',
-      abi: require('../generated/chainlinkFAST_GAS.json'),
+      abi: require('../generated/ChainlinkFAST_GAS.json'),
     },
     WETH: {
       name: 'Wrapped Ether',

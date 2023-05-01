@@ -25,11 +25,5 @@
     "PENDING": "Confirm approval in wallet...",
     "SUBMITTED": "Awaiting confirmations...",
     "SUCCESS": "Approved {{targetContractName}} for {{sourceTokenName}}"
-  },
-  "errors": {
-    "NOT_ENOUGH_BALANCE": "Insufficient {{sourceTokenName}} balance",
-    "NO_INPUT_AMOUNT": "Enter Amount",
-    "UNKNOWN": "Enter Amount",
-    "UNPREDICTABLE_GAS_LIMIT": "Error estimating gas for transaction"
   }
 }
