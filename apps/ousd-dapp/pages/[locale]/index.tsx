@@ -2,9 +2,9 @@ import { ErrorBoundary, TokenSwap } from '@originprotocol/ui';
 import { contracts } from '@originprotocol/web3';
 import { useTranslation } from 'next-i18next';
 import pick from 'lodash/pick';
+import { BigNumber } from 'ethers';
 import { getStaticPaths, makeStaticProps } from '../../lib/getStatic';
 import { DAPP_TOKENS, STORED_TOKEN_LS_KEY } from '../../src/constants';
-import { BigNumber } from 'ethers';
 
 const canUseOUSDVault = ({ mode, fromToken, toToken }) => {
   if (mode === 'MINT') {
@@ -23,7 +23,8 @@ const canUseCurve = ({ mode, toToken, fromToken }) => {
   // Cant be Redeem & Mix, ETH
   return (
     !(mode === 'REDEEM' && ['MIX'].includes(toToken?.symbol)) &&
-    !['ETH'].includes(fromToken?.symbol)
+    !['ETH'].includes(fromToken?.symbol) &&
+    !['ETH'].includes(toToken?.symbol)
   );
 };
 

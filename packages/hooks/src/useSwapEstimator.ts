@@ -762,18 +762,24 @@ const estimateCurveSwap = async ({
       provider
     );
 
-    const fromTokenContract = new ethers.Contract(
-      fromToken.address,
-      fromToken.abi,
-      provider
+    let fromTokenContract;
+    let fromTokenDecimals;
+
+    if (fromToken.symbol === 'ETH' || toToken.symbol === 'ETH') {
+      fromTokenDecimals = 18;
+    } else {
+      fromTokenContract = new ethers.Contract(
+        fromToken.address,
+        fromToken.abi,
+        provider
+      );
+      fromTokenDecimals = await fromTokenContract['decimals']();
+    }
+
+    const registryExchangeAddress = await curveAddressContract['get_address'](
+      2,
+      { gasLimit: 100000 } // Manual gas for ethers issue w/ vyper
     );
-
-    const [registryExchangeAddress, fromTokenDecimals] = await Promise.all([
-      curveAddressContract['get_address'](2, { gasLimit: 100000 }), // Manual gas for ethers issue w/ vyper
-      fromTokenContract['decimals'](),
-    ]);
-
-    console.log(registryExchangeAddress, fromTokenDecimals);
 
     const curveRegistryExchange = new ethers.Contract(
       registryExchangeAddress,
@@ -826,7 +832,9 @@ const estimateCurveSwap = async ({
     try {
       receiveAmount = await curveRegistryExchange.get_exchange_amount(
         poolContract.address,
-        fromToken.address,
+        fromToken?.symbol === 'ETH'
+          ? ethers.constants.AddressZero
+          : fromToken.address,
         toToken.address,
         fromTokenValue,
         {
@@ -837,53 +845,55 @@ const estimateCurveSwap = async ({
       return handleError(e as EstimateError, poolContract);
     }
 
-    const swapRatio =
-      parseFloat(formatWeiBalance(fromTokenValue.toString())) /
-      parseFloat(formatWeiBalance(receiveAmount.toString()));
-
-    if (swapRatio > 1.2) {
-      return {
-        error: 'BAD_SWAP_RATIO',
-        contract: poolContract,
-        fromToken,
-      };
-    }
-
-    const fromTokenAllowance = await fromTokenContract['allowance'](
-      address,
-      poolContract.address
-    );
-
     const minimumAmount = fromTokenValue.sub(
       fromTokenValue.mul(settings?.tolerance * 100).div(10000)
     );
 
-    const hasProvidedAllowance = fromTokenAllowance.gte(fromTokenValue);
+    let fromTokenAllowance;
 
-    // Needs approvals, get estimates
-    if (!hasProvidedAllowance) {
-      /* This estimate is from the few ones observed on the mainnet:
-       * https://etherscan.io/tx/0x3ff7178d8be668649928d86863c78cd249224211efe67f23623017812e7918bb
-       * https://etherscan.io/tx/0xbf033ffbaf01b808953ca1904d3b0110b50337d60d89c96cd06f3f9a6972d3ca
-       * https://etherscan.io/tx/0x77d98d0307b53e81f50b39132e038a1c6ef87a599a381675ce44038515a04738
-       * https://etherscan.io/tx/0xbce1a2f1e76d4b4f900b3952f34f5f53f8be4a65ccff348661d19b9a3827aa04
-       *
-       */
-      const gasLimit = BigNumber.from(350000);
-      const approveGasLimit = await fromTokenContract
-        .connect(signer)
-        .estimateGas['approve'](poolContract.address, fromTokenValue);
-      return {
-        contract: poolContract,
-        gasLimit: gasLimit.add(approveGasLimit),
-        receiveAmount,
-        minimumAmount,
-        hasProvidedAllowance,
-        feeData,
-        value,
-        fromToken,
-        toToken,
-      };
+    if (fromToken?.symbol === 'ETH') {
+      const depositAmount = parseUnits(String(value), 18);
+      const currentBalanceOf = await provider.getBalance(address);
+      if (depositAmount.gt(currentBalanceOf)) {
+        return {
+          error: 'NOT_ENOUGH_BALANCE',
+          contract: config.contract,
+          fromToken,
+        };
+      }
+    } else if (fromTokenContract) {
+      fromTokenAllowance = await fromTokenContract['allowance'](
+        address,
+        poolContract.address
+      );
+
+      const hasProvidedAllowance = fromTokenAllowance.gte(fromTokenValue);
+
+      // Needs approvals, get estimates
+      if (!hasProvidedAllowance) {
+        /* This estimate is from the few ones observed on the mainnet:
+         * https://etherscan.io/tx/0x3ff7178d8be668649928d86863c78cd249224211efe67f23623017812e7918bb
+         * https://etherscan.io/tx/0xbf033ffbaf01b808953ca1904d3b0110b50337d60d89c96cd06f3f9a6972d3ca
+         * https://etherscan.io/tx/0x77d98d0307b53e81f50b39132e038a1c6ef87a599a381675ce44038515a04738
+         * https://etherscan.io/tx/0xbce1a2f1e76d4b4f900b3952f34f5f53f8be4a65ccff348661d19b9a3827aa04
+         *
+         */
+        const gasLimit = BigNumber.from(350000);
+        const approveGasLimit = await fromTokenContract
+          .connect(signer)
+          .estimateGas['approve'](poolContract.address, fromTokenValue);
+        return {
+          contract: poolContract,
+          gasLimit: gasLimit.add(approveGasLimit),
+          minimumAmount,
+          receiveAmount,
+          hasProvidedAllowance,
+          feeData,
+          value,
+          fromToken,
+          toToken,
+        };
+      }
     }
 
     const factoryAddress = await curveAddressContract['get_address'](3, {
@@ -896,6 +906,8 @@ const estimateCurveSwap = async ({
       provider
     );
 
+    console.log(factoryAddress, poolContract.address);
+
     const underlyingCoins = await factoryContract.get_underlying_coins(
       poolContract.address
     );
@@ -903,6 +915,23 @@ const estimateCurveSwap = async ({
     const curveUnderlyingCoins = underlyingCoins.map((address: string) =>
       address?.toLowerCase()
     );
+
+    console.log({
+      underlyingCoins,
+      curveUnderlyingCoins,
+    });
+
+    const swapRatio =
+      parseFloat(formatWeiBalance(fromTokenValue.toString())) /
+      parseFloat(formatWeiBalance(receiveAmount.toString()));
+
+    if (swapRatio > 1.2) {
+      return {
+        error: 'BAD_SWAP_RATIO',
+        contract: poolContract,
+        fromToken,
+      };
+    }
 
     const fromIndexFound = curveUnderlyingCoins.indexOf(
       fromToken.address.toLowerCase()

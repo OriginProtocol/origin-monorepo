@@ -44,7 +44,7 @@ const SettingsMenu = ({ i18n, onChange, settings }: SettingsMenuProps) => {
   const handleAutoChange = () => {
     setShowFrontRun(false);
     onChange({
-      tolerance: 0.1,
+      tolerance: 0.3,
     });
   };
 

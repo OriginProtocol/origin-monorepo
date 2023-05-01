@@ -36,10 +36,7 @@ const canUseZapper = ({ mode, fromToken }) => {
 
 const canUseCurve = ({ mode, toToken, fromToken }) => {
   // Cant be Redeem & Mix, ETH
-  return (
-    !(mode === 'REDEEM' && ['OETH_MIX'].includes(toToken?.symbol)) &&
-    !['ETH'].includes(fromToken?.symbol)
-  );
+  return !(mode === 'REDEEM' && ['OETH_MIX'].includes(toToken?.symbol));
 };
 
 const Swap = () => {

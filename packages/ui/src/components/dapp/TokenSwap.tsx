@@ -50,7 +50,7 @@ const TokenSwap = ({
   const { address, isConnected } = useAccount();
 
   const [settings, setSettings] = useState({
-    tolerance: 1,
+    tolerance: 0.3,
     gwei: 0,
   });
 
@@ -133,7 +133,7 @@ const TokenSwap = ({
         prev?.selectedTokenSymbol === selectedTokenSymbol &&
         prev?.estimatedTokenSymbol === estimatedTokenSymbol &&
         prev?.selectedEstimate &&
-        sortedGasEstimates.find(
+        sortedGasEstimates?.find(
           (estimate: any) =>
             estimate?.contract?.address ===
             prev?.selectedEstimate?.contract?.address
