@@ -22,7 +22,7 @@ type WrapTokenProps = {
   wrappedToken: any;
   emptyState: any;
   storageKey: string;
-  usdConversionPrice: number | undefined;
+  usdConversionPrice: number;
 };
 
 const FIELDS_TO_STORE = [

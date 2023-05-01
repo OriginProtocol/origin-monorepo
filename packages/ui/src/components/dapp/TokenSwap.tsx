@@ -24,7 +24,7 @@ type TokenSwapProps = {
   supportedSwapTokens: string[];
   additionalRedeemTokens: any;
   storageKey: string;
-  usdConversionPrice: number | undefined;
+  usdConversionPrice: number;
 };
 
 const FIELDS_TO_STORE = [

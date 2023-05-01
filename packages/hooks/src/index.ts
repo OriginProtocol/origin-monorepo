@@ -21,7 +21,7 @@ export {
   useNetwork,
   useSwitchNetwork,
   erc20ABI,
-  Chain,
+  type Chain,
 } from 'wagmi';
 export { default as useAutoConnect } from './useAutoConnect';
 export { default as useTokenAllowances } from './useTokenAllowances';

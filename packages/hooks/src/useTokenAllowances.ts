@@ -32,7 +32,7 @@ const useTokenAllowances = ({
         functionName: 'decimals',
       });
       // Add allowances for each provided address
-      map(allowances, (allowanceAddress, name) => {
+      map(allowances, (allowanceAddress: string, name: string) => {
         // @ts-ignore
         acc.push({
           id: `${token.symbol}_${name}`,
