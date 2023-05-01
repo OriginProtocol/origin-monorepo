@@ -16,8 +16,8 @@ const Wrap = () => {
         unwrappedToken={contracts.mainnet.OETH}
         wrappedToken={contracts.mainnet.woETH}
         emptyState={{
-          description: t('description'),
-          cta: t('learnMore'),
+          description: t('description', { ns: 'wrap' }),
+          cta: t('learnMore', { ns: 'wrap' }),
           externalHref: 'https://www.oeth.com',
         }}
         storageKey={STORED_WRAPPED_LS_KEY}

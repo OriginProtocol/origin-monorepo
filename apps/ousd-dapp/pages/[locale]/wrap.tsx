@@ -13,8 +13,8 @@ const Wrap = () => {
         unwrappedToken={contracts.mainnet.OUSD}
         wrappedToken={contracts.mainnet.WOUSD}
         emptyState={{
-          description: t('description'),
-          cta: t('learnMore'),
+          description: t('description', { ns: 'wrap' }),
+          cta: t('learnMore', { ns: 'wrap' }),
           externalHref: 'https://www.ousd.com',
         }}
         storageKey={STORED_WRAPPED_LS_KEY}
