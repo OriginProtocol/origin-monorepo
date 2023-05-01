@@ -84,11 +84,11 @@ interface UserMenuDropdownProps {
 }
 
 const providerNameIconMap = {
-  MetaMask: 'metamask.svg',
-  Ledger: 'ledger.svg',
-  Exodus: 'exodus.svg',
-  MyEtherWallet: 'myetherwallet.svg',
-  WalletConnect: 'walletconnect.svg',
+  metamask: 'metamask.svg',
+  ledger: 'ledger.svg',
+  exodus: 'exodus.svg',
+  myetherwallet: 'myetherwallet.svg',
+  walletconnect: 'walletconnect.svg',
 };
 
 const UserMenuDropdown = ({
@@ -139,8 +139,8 @@ const UserMenuDropdown = ({
             {providerIcon && (
               <Image
                 src={`/wallets/${providerIcon}`}
-                height={24}
-                width={24}
+                height={20}
+                width={20}
                 alt={`${providerName} wallet`}
               />
             )}
