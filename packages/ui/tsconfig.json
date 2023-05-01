@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "types": ["jest", "node"],
+    "types": ["node"],
     "module": "commonjs",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
