@@ -4,8 +4,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "sh deployment/build-frontend.sh",
-    "start": "sh deployment/start-frontend.sh"
+    "build": "next build",
+    "start": "next start"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "cacheDirectories": [
+    ".next/cache"
+  ]
 }
