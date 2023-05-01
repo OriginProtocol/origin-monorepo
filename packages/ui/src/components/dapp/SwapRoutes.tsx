@@ -102,10 +102,7 @@ const EstimateView = ({
           <h4 className="text-xl font-header text-[#FF4E4E]">{diff}%</h4>
         ) : !hasEstimate || error ? (
           <h4 className="font-header text-[#FF4E4E]">
-            {i18n(`errors.${error || 'NO_ESTIMATES'}`, {
-              ns: 'swap',
-              ...translationContext,
-            })}
+            {i18n(`errors.${error || 'NO_ESTIMATES'}`, translationContext)}
           </h4>
         ) : null}
       </div>

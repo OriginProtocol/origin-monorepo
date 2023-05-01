@@ -166,10 +166,7 @@ const MintableActions = ({
         !isPreparing &&
         error && (
           <span role="alert" className="text-origin-secondary text-sm">
-            {i18n(`errors.${error}`, {
-              ns: 'swap',
-              ...translationContext,
-            })}
+            {i18n(`errors.${error}`, translationContext)}
           </span>
         )
       )}
@@ -265,10 +262,7 @@ const RedeemActions = ({
     <>
       {error && (
         <span role="alert" className="text-origin-secondary text-sm">
-          {i18n(`errors.${error}`, {
-            ns: 'swap',
-            ...translationContext,
-          })}
+          {i18n(`errors.${error}`, translationContext)}
         </span>
       )}
       <button
@@ -357,10 +351,10 @@ const SwapActions = ({
 
   return invalidInputValue || error ? (
     <div className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">
-      {i18n(`errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`, {
-        ns: 'swap',
-        ...translationContext,
-      })}
+      {i18n(
+        `errors.${invalidInputValue ? 'NO_INPUT_AMOUNT' : error}`,
+        translationContext
+      )}
     </div>
   ) : isMint ? (
     <MintableActions
