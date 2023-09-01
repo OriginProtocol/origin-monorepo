@@ -39,12 +39,13 @@
     "NO_INPUT_AMOUNT": "Enter Amount",
     "UNKNOWN": "Enter Amount",
     "UNPREDICTABLE_GAS_LIMIT": "Error estimating gas for transaction",
-    "REDEEM_TOO_LOW": "Redeem amount lower than minimum, adjust tolerance up",
+    "REDEEM_TOO_LOW": "Redeem lower than minimum, adjust tolerance",
     "NO_ESTIMATES": "No Estimates",
     "UNSUPPORTED": "Unsupported",
     "NOT_ENOUGH_LIQUIDITY": "Not enough liquidity",
     "NO_LIQUIDITY_POOL": "No liquidity pool",
     "BAD_SWAP_RATIO": "Bad swap ratio",
-    "UNIMPLEMENTED": "Not Implemented"
+    "UNIMPLEMENTED": "Not Implemented",
+    "PRICE_TOO_HIGH": "Receive below minimum tolerance"
   }
 }

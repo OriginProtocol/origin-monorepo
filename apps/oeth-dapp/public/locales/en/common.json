@@ -46,6 +46,7 @@
     "NOT_ENOUGH_LIQUIDITY": "Not enough liquidity",
     "NO_LIQUIDITY_POOL": "No liquidity pool",
     "BAD_SWAP_RATIO": "Bad swap ratio",
-    "UNIMPLEMENTED": "Not Implemented"
+    "UNIMPLEMENTED": "Not Implemented",
+    "PRICE_TOO_HIGH": "Receive below minimum tolerance"
   }
 }

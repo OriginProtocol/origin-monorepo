@@ -8,6 +8,7 @@ import {
   useWaitForTransaction,
 } from '@originprotocol/hooks';
 import { parseUnits, MaxUint256 } from '@originprotocol/utils';
+import { isEmpty } from 'lodash';
 import { SWAP_TYPES } from '../../constants';
 
 type SuccessContext = {
@@ -43,38 +44,17 @@ const EXPECTED_CHAIN_ID = parseInt(
 const MintableActions = ({
   i18n,
   swap,
-  selectedToken,
   translationContext,
   onSuccess,
   onRefresh,
   isLoadingEstimate,
 }: ActionsProps) => {
   const [error, setError] = useState('');
-  const { value, selectedEstimate } = swap || {};
-  const { hasProvidedAllowance, contract, prepareParams } =
-    selectedEstimate || {};
-  const weiValue = parseUnits(String(value), selectedToken?.decimals || 18);
+  const { selectedEstimate } = swap || {};
+  const { hasProvidedAllowance, prepareParams } = selectedEstimate || {};
 
-  const { config: allowanceWriteConfig, error: allowanceWriteError } =
-    usePrepareContractWrite({
-      address: selectedToken?.address,
-      abi: selectedToken?.abi,
-      functionName: 'approve',
-      args: [contract?.address, weiValue || MaxUint256],
-      chainId: EXPECTED_CHAIN_ID,
-    });
-
-  const {
-    data: allowanceWriteData,
-    isLoading: allowanceWriteIsLoading,
-    write: allowanceWrite,
-  } = useContractWrite(allowanceWriteConfig);
-
-  const {
-    config: swapWriteConfig,
-    error: swapWriteError,
-    refetch: refetchWrite,
-  } = usePrepareContractWrite(prepareParams);
+  const { config: swapWriteConfig, error: swapWriteError } =
+    usePrepareContractWrite(prepareParams);
 
   const {
     data: swapWriteData,
@@ -82,21 +62,6 @@ const MintableActions = ({
     write: swapWrite,
     // @ts-ignore
   } = useContractWrite(swapWriteConfig);
-
-  const {
-    isLoading: allowanceWriteIsSubmitted,
-    isSuccess: allowanceWriteIsSuccess,
-  } = useWaitForTransaction({
-    hash: allowanceWriteData?.hash,
-  });
-
-  useEffect(() => {
-    if (allowanceWriteIsSuccess && onSuccess) {
-      onSuccess('ALLOWANCE', { context: swapWriteData });
-      onRefresh();
-      refetchWrite();
-    }
-  }, [allowanceWriteIsSuccess]);
 
   const { isLoading: snapWriteIsSubmitted, isSuccess: snapWriteIsSuccess } =
     useWaitForTransaction({
@@ -121,8 +86,6 @@ const MintableActions = ({
     }
   }, [swapWriteError]);
 
-  const isPreparing = swapWriteIsLoading || allowanceWriteIsLoading;
-
   const swapWriteDisabled =
     isLoadingEstimate ||
     !hasProvidedAllowance ||
@@ -131,44 +94,10 @@ const MintableActions = ({
 
   return (
     <div className="flex flex-col space-y-4">
-      {!hasProvidedAllowance ? (
-        <button
-          className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
-          onClick={() => {
-            allowanceWrite?.();
-          }}
-        >
-          {(() => {
-            if (allowanceWriteIsLoading) {
-              return i18n('approval.PENDING', {
-                ns: 'swap',
-                ...translationContext,
-              });
-            } else if (allowanceWriteIsSubmitted) {
-              return i18n('approval.SUBMITTED', {
-                ns: 'swap',
-                ...translationContext,
-              });
-            } else if (allowanceWriteIsSuccess) {
-              return i18n('approval.SUCCESS', {
-                ns: 'swap',
-                ...translationContext,
-              });
-            } else {
-              return i18n('approval.DEFAULT', {
-                ns: 'swap',
-                ...translationContext,
-              });
-            }
-          })()}
-        </button>
-      ) : (
-        !isPreparing &&
-        error && (
-          <span role="alert" className="text-origin-secondary text-sm">
-            {i18n(`errors.${error}`, translationContext)}
-          </span>
-        )
+      {error && (
+        <span role="alert" className="text-origin-secondary text-sm">
+          {i18n(`errors.${error}`, translationContext)}
+        </span>
       )}
       <button
         className={cx(
@@ -243,7 +172,7 @@ const RedeemActions = ({
   }, [snapWriteIsSuccess]);
 
   useEffect(() => {
-    if (swapWriteError) {
+    if (!isEmpty(swapWriteError)) {
       let error = 'UNPREDICTABLE_GAS_LIMIT';
       if (
         swapWriteError?.message?.includes('Redeem amount lower than minimum')
@@ -256,10 +185,11 @@ const RedeemActions = ({
     }
   }, [swapWriteError]);
 
-  const swapWriteDisabled = isLoadingEstimate || !!swapWriteError || !swapWrite;
+  const swapWriteDisabled =
+    isLoadingEstimate || !isEmpty(swapWriteError) || !swapWrite;
 
   return (
-    <>
+    <div className="flex flex-col space-y-4">
       {error && (
         <span role="alert" className="text-origin-secondary text-sm">
           {i18n(`errors.${error}`, translationContext)}
@@ -301,7 +231,7 @@ const RedeemActions = ({
           }
         })()}
       </button>
-    </>
+    </div>
   );
 };
 
@@ -317,14 +247,10 @@ const SwapActions = ({
 }: SwapActionsProps) => {
   const { chain } = useNetwork();
   const { chains, switchNetwork } = useSwitchNetwork();
-
   const { mode, selectedEstimate, value } = swap || {};
-  const { error } = selectedEstimate || {};
-
+  const { error, hasProvidedAllowance, contract } = selectedEstimate || {};
   const isMint = mode === SWAP_TYPES.MINT;
-
   const parsedValue = !value ? 0 : parseFloat(value);
-
   const invalidInputValue =
     !parsedValue || isNaN(parsedValue) || !targetContract;
 
@@ -334,6 +260,7 @@ const SwapActions = ({
     targetTokenName: estimatedToken?.symbol,
   };
 
+  // Switch network if not correct chain
   if (chain?.id !== EXPECTED_CHAIN_ID) {
     return (
       <button
@@ -349,6 +276,40 @@ const SwapActions = ({
     );
   }
 
+  const weiValue = parseUnits(
+    String(value || 0),
+    selectedToken?.decimals || 18
+  );
+
+  const { config: allowanceWriteConfig, error: allowanceWriteError } =
+    usePrepareContractWrite({
+      address: selectedToken?.address,
+      abi: selectedToken?.abi,
+      functionName: 'approve',
+      args: [contract?.address, weiValue || MaxUint256],
+      chainId: EXPECTED_CHAIN_ID,
+    });
+
+  const {
+    data: allowanceWriteData,
+    isLoading: allowanceWriteIsLoading,
+    write: allowanceWrite,
+  } = useContractWrite(allowanceWriteConfig);
+
+  const {
+    isLoading: allowanceWriteIsSubmitted,
+    isSuccess: allowanceWriteIsSuccess,
+  } = useWaitForTransaction({
+    hash: allowanceWriteData?.hash,
+  });
+
+  useEffect(() => {
+    if (allowanceWriteIsSuccess && onSuccess) {
+      onSuccess('ALLOWANCE', { context: allowanceWriteData });
+      onRefresh();
+    }
+  }, [allowanceWriteIsSuccess]);
+
   return invalidInputValue || error ? (
     <div className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl opacity-50 cursor-not-allowed">
       {i18n(
@@ -356,25 +317,62 @@ const SwapActions = ({
         translationContext
       )}
     </div>
-  ) : isMint ? (
-    <MintableActions
-      i18n={i18n}
-      swap={swap}
-      selectedToken={selectedToken}
-      translationContext={translationContext}
-      onSuccess={onSuccess}
-      onRefresh={onRefresh}
-      isLoadingEstimate={isLoadingEstimate}
-    />
   ) : (
-    <RedeemActions
-      i18n={i18n}
-      swap={swap}
-      translationContext={translationContext}
-      onSuccess={onSuccess}
-      onRefresh={onRefresh}
-      isLoadingEstimate={isLoadingEstimate}
-    />
+    <>
+      {!hasProvidedAllowance && (
+        <button
+          className="flex items-center justify-center w-full h-[64px] text-base lg:h-[72px] lg:text-xl bg-gradient-to-r from-gradient2-from to-gradient2-to rounded-xl"
+          onClick={() => {
+            allowanceWrite?.();
+          }}
+          disabled={!allowanceWrite}
+        >
+          {(() => {
+            if (allowanceWriteIsLoading) {
+              return i18n('approval.PENDING', {
+                ns: 'swap',
+                ...translationContext,
+              });
+            } else if (allowanceWriteIsSubmitted) {
+              return i18n('approval.SUBMITTED', {
+                ns: 'swap',
+                ...translationContext,
+              });
+            } else if (allowanceWriteIsSuccess) {
+              return i18n('approval.SUCCESS', {
+                ns: 'swap',
+                ...translationContext,
+              });
+            } else {
+              return i18n('approval.DEFAULT', {
+                ns: 'swap',
+                ...translationContext,
+              });
+            }
+          })()}
+        </button>
+      )}
+      {isMint ? (
+        <MintableActions
+          i18n={i18n}
+          swap={swap}
+          selectedToken={selectedToken}
+          translationContext={translationContext}
+          onSuccess={onSuccess}
+          onRefresh={onRefresh}
+          isLoadingEstimate={isLoadingEstimate}
+        />
+      ) : (
+        <RedeemActions
+          i18n={i18n}
+          swap={swap}
+          translationContext={translationContext}
+          onSuccess={onSuccess}
+          onRefresh={onRefresh}
+          isLoadingEstimate={isLoadingEstimate}
+        />
+      )}
+    </>
   );
 };
 

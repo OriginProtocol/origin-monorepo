@@ -4,6 +4,7 @@ import {
   parseUnits,
   formatUnits,
   formatWeiBalance,
+  NullAddress,
 } from '@originprotocol/utils';
 import { contracts } from '@originprotocol/web3';
 import { useDebouncedCallback } from 'use-debounce';
@@ -60,6 +61,14 @@ const curveFactoryMiniAbi = [
       },
     ],
   },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    name: 'get_coins',
+    inputs: [{ name: '_pool', type: 'address' }],
+    outputs: [{ name: '', type: 'address[4]' }],
+    gas: 9164,
+  },
 ];
 
 const curveMetapoolMiniAbi = [
@@ -92,6 +101,18 @@ const curveMetapoolMiniAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
+  {
+    stateMutability: 'payable',
+    type: 'function',
+    name: 'exchange',
+    inputs: [
+      { name: 'i', type: 'int128' },
+      { name: 'j', type: 'int128' },
+      { name: '_dx', type: 'uint256' },
+      { name: '_min_dy', type: 'uint256' },
+    ],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
 ];
 
 const handleError = (e: EstimateError, contract: any) => {
@@ -99,7 +120,10 @@ const handleError = (e: EstimateError, contract: any) => {
 
   const errorMessage = e?.data?.message || e?.message;
 
-  if (errorMessage.includes('Mint amount lower than minimum')) {
+  if (
+    errorMessage.includes('Mint amount lower than minimum') ||
+    errorMessage.includes('Redeem amount lower than minimum')
+  ) {
     return {
       error: 'PRICE_TOO_HIGH',
       contract,
@@ -107,11 +131,6 @@ const handleError = (e: EstimateError, contract: any) => {
   } else if (errorMessage.includes('Asset price below peg')) {
     return {
       error: 'BELOW_PEG',
-      contract,
-    };
-  } else if (errorMessage.includes('Redeem amount lower than minimum')) {
-    return {
-      error: 'PRICE_TOO_HIGH',
       contract,
     };
   } else if (
@@ -127,6 +146,13 @@ const handleError = (e: EstimateError, contract: any) => {
   } else if (errorMessage.includes('No available market')) {
     return {
       error: 'NO_LIQUIDITY_POOL',
+      contract,
+    };
+  } else if (
+    errorMessage.includes('Exchange resulted in fewer coins than expected')
+  ) {
+    return {
+      error: 'REDEEM_TOO_LOW',
       contract,
     };
   }
@@ -429,6 +455,7 @@ const estimateVaultRedeem = async ({
       minimumAmount,
       fromTokenValue,
       feeData,
+      hasProvidedAllowance: true,
       breakdown: mixedAssets,
       prepareParams: {
         address: config.contract.address,
@@ -765,9 +792,15 @@ const estimateCurveSwap = async ({
     let fromTokenContract;
     let fromTokenDecimals;
 
-    if (fromToken.symbol === 'ETH' || toToken.symbol === 'ETH') {
+    // from/to will have no address if ETH
+    if (!fromToken?.address) {
+      fromToken.address = NullAddress;
       fromTokenDecimals = 18;
-    } else {
+    } else if (!toToken?.address) {
+      toToken.address = NullAddress;
+    }
+
+    if (fromToken.address !== NullAddress) {
       fromTokenContract = new ethers.Contract(
         fromToken.address,
         fromToken.abi,
@@ -789,23 +822,25 @@ const estimateCurveSwap = async ({
 
     let poolContract;
 
-    if (
+    const isOUSD =
       toToken.symbol === contracts['mainnet']['OUSD'].symbol ||
-      fromToken.symbol === contracts['mainnet']['OUSD'].symbol
-    ) {
+      fromToken.symbol === contracts['mainnet']['OUSD'].symbol;
+
+    const isOETH =
+      toToken.symbol === contracts['mainnet']['OETH'].symbol ||
+      fromToken.symbol === contracts['mainnet']['OETH'].symbol;
+
+    if (isOUSD) {
       poolContract = {
         address: contracts['mainnet']['CurveOUSDMetaPool']?.address,
         name: contracts['mainnet']['CurveOUSDMetaPool']?.name,
         abi: curveMetapoolMiniAbi,
         functionName: 'exchange_underlying',
       };
-    } else if (
-      toToken.symbol === contracts['mainnet']['OETH'].symbol ||
-      fromToken.symbol === contracts['mainnet']['OETH'].symbol
-    ) {
+    } else if (isOETH) {
       poolContract = {
-        address: contracts['mainnet']['CurveOETHMetaPool']?.address,
-        name: contracts['mainnet']['CurveOETHMetaPool']?.name,
+        address: contracts['mainnet']['CurveOETHPool']?.address,
+        name: contracts['mainnet']['CurveOETHPool']?.name,
         abi: curveMetapoolMiniAbi,
         functionName: 'exchange',
       };
@@ -832,9 +867,7 @@ const estimateCurveSwap = async ({
     try {
       receiveAmount = await curveRegistryExchange.get_exchange_amount(
         poolContract.address,
-        fromToken?.symbol === 'ETH'
-          ? ethers.constants.AddressZero
-          : fromToken.address,
+        fromToken.address,
         toToken.address,
         fromTokenValue,
         {
@@ -851,10 +884,9 @@ const estimateCurveSwap = async ({
 
     let fromTokenAllowance;
 
-    if (fromToken?.symbol === 'ETH') {
-      const depositAmount = parseUnits(String(value), 18);
+    if (fromToken?.address === NullAddress) {
       const currentBalanceOf = await provider.getBalance(address);
-      if (depositAmount.gt(currentBalanceOf)) {
+      if (fromTokenValue.gt(currentBalanceOf)) {
         return {
           error: 'NOT_ENOUGH_BALANCE',
           contract: config.contract,
@@ -882,6 +914,7 @@ const estimateCurveSwap = async ({
         const approveGasLimit = await fromTokenContract
           .connect(signer)
           .estimateGas['approve'](poolContract.address, fromTokenValue);
+
         return {
           contract: poolContract,
           gasLimit: gasLimit.add(approveGasLimit),
@@ -902,13 +935,14 @@ const estimateCurveSwap = async ({
 
     const factoryContract = new ethers.Contract(
       factoryAddress,
+      // @ts-ignore
       curveFactoryMiniAbi,
       provider
     );
 
-    const underlyingCoins = await factoryContract.get_underlying_coins(
-      poolContract.address
-    );
+    const underlyingCoins = await factoryContract[
+      isOUSD ? 'get_underlying_coins' : 'get_coins'
+    ](poolContract.address);
 
     const curveUnderlyingCoins = underlyingCoins.map((address: string) =>
       address?.toLowerCase()
@@ -927,12 +961,14 @@ const estimateCurveSwap = async ({
     }
 
     const fromIndexFound = curveUnderlyingCoins.indexOf(
-      fromToken.address.toLowerCase()
+      fromToken?.address?.toLowerCase()
     );
 
     const toIndexFound = curveUnderlyingCoins.indexOf(
-      toToken.address.toLowerCase()
+      toToken?.address?.toLowerCase()
     );
+
+    const fromEth = fromToken?.address === NullAddress;
 
     const gasLimit = await liquidityPoolContract
       .connect(signer)
@@ -940,7 +976,12 @@ const estimateCurveSwap = async ({
         fromIndexFound,
         toIndexFound,
         fromTokenValue,
-        minimumAmount
+        minimumAmount,
+        fromEth
+          ? {
+              value: fromTokenValue,
+            }
+          : null
       );
 
     return {
@@ -956,6 +997,13 @@ const estimateCurveSwap = async ({
         functionName: poolContract.functionName,
         args: [fromIndexFound, toIndexFound, fromTokenValue, minimumAmount],
         staleTime: 2_000,
+        ...(fromEth
+          ? {
+              overrides: {
+                value: fromTokenValue,
+              },
+            }
+          : {}),
       },
       value,
       fromToken,
@@ -1004,47 +1052,50 @@ const enrichAndSortEstimates = (
   usdConversionPrice: number | undefined
 ) => {
   return orderBy(
-    estimates.map((estimate: SwapEstimate) => {
-      const { feeData, receiveAmount, gasLimit, value, error } = estimate;
+    estimates
+      .map((estimate: SwapEstimate) => {
+        const { feeData, receiveAmount, gasLimit, value, error } = estimate;
 
-      if (error) {
+        if (error) {
+          if (error === 'UNSUPPORTED') {
+            return {
+              ...estimate,
+              effectivePrice: Infinity, // Arb. large number to move to bottom
+            };
+          }
+          return null;
+        }
+
+        const { gasPrice } = feeData;
+
+        // gasPrice * gwei * gasLimit * eth cost
+        const gasCostUsd = parseFloat(
+          formatUnits(
+            gasPrice
+              .mul(gasLimit)
+              .mul(BigNumber.from(Math.trunc(usdConversionPrice || 0)))
+              .toString(),
+            18
+          )
+        );
+        const valueInUsd =
+          parseFloat(String(value)) * (usdConversionPrice || 0);
+        const amountReceived = parseFloat(formatWeiBalance(receiveAmount));
+        const receiveAmountUsd = amountReceived * (usdConversionPrice || 0);
+        const effectivePrice =
+          (parseFloat(String(value)) + parseFloat(String(gasCostUsd))) /
+          receiveAmountUsd;
+
         return {
           ...estimate,
-          effectivePrice:
-            error === 'UNKNOWN' || error === 'UNSUPPORTED'
-              ? Infinity
-              : 10000000000000, // Arb. large number to move to bottom
+          usdConversionPrice,
+          gasCostUsd,
+          valueInUsd,
+          receiveAmountUsd,
+          effectivePrice,
         };
-      }
-
-      const { gasPrice } = feeData;
-
-      // gasPrice * gwei * gasLimit * eth cost
-      const gasCostUsd = parseFloat(
-        formatUnits(
-          gasPrice
-            .mul(gasLimit)
-            .mul(BigNumber.from(Math.trunc(usdConversionPrice || 0)))
-            .toString(),
-          18
-        )
-      );
-      const valueInUsd = parseFloat(String(value)) * (usdConversionPrice || 0);
-      const amountReceived = parseFloat(formatWeiBalance(receiveAmount));
-      const receiveAmountUsd = amountReceived * (usdConversionPrice || 0);
-      const effectivePrice =
-        (parseFloat(String(value)) + parseFloat(String(gasCostUsd))) /
-        receiveAmountUsd;
-
-      return {
-        ...estimate,
-        usdConversionPrice,
-        gasCostUsd,
-        valueInUsd,
-        receiveAmountUsd,
-        effectivePrice,
-      };
-    }),
+      })
+      .filter(Boolean),
     'effectivePrice',
     'asc'
   );

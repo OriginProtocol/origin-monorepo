@@ -229,10 +229,10 @@ export const contracts: Contracts = {
       address: '0x87650D7bbfC3A9F10587d7778206671719d9910D',
       abi: require('../generated/CurveOUSDMetaPool.json'),
     },
-    CurveOETHMetaPool: {
+    CurveOETHPool: {
       name: 'Curve.fi Factory Pool',
       address: '0x94b17476a93b3262d87b9a326965d1e91f9c13e7',
-      abi: require('../generated/CurveOETHMetaPool.json'),
+      abi: require('../generated/CurveOETHPool.json'),
     },
     CurveGaugeController: {
       name: 'CurveGaugeController',

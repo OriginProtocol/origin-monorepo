@@ -50,7 +50,7 @@ const TokenSwap = ({
   const { address, isConnected } = useAccount();
 
   const [settings, setSettings] = useState({
-    tolerance: 0.3,
+    tolerance: 1,
     gwei: 0,
   });
 
@@ -195,10 +195,10 @@ const TokenSwap = ({
 
   const onSwitchMode = () => {
     setSwap((prev) => {
-      const wasmint = prev.mode === SWAP_TYPES.MINT;
+      const wasMint = prev.mode === SWAP_TYPES.MINT;
       return {
         ...prev,
-        mode: wasmint ? SWAP_TYPES.REDEEM : SWAP_TYPES.MINT,
+        mode: wasMint ? SWAP_TYPES.REDEEM : SWAP_TYPES.MINT,
         selectedTokenSymbol:
           !wasmint && additionalRedeemTokens[prev.estimatedTokenSymbol]
             ? supportedSwapTokens?.[0]

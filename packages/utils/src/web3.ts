@@ -109,3 +109,5 @@ export {
 } from 'ethers/lib/utils.js';
 
 export const MaxUint256 = ethers.constants.MaxUint256;
+
+export const NullAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';

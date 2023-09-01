@@ -2,9 +2,53 @@
 const fs = require('fs');
 const path = require('path');
 const { ethers } = require('ethers');
+const util = require('node:util');
 
 const abiMapping = {
   mainnet: {
+    AaveStrategy: '0x4F424C6f066ae74784f3595A3A84923ad36d5471',
+    AaveStrategyProxy: '0x5e3646A1Db86993f73E6b74A57D8640B69F7e259',
+    Buyback: '0x6C5cdfB47150EFc52072cB93Eea1e0F123529748',
+    ConvexGeneralizedMetaStrategy: '0xB6764c2Cc8F1fDCd89Af1C3e246f886579746233',
+    ConvexLUSDMetaStrategyProxy: '0x7A192DD9Cc4Ea9bdEdeC9992df74F1DA55e60a19',
+    ConvexOUSDMetaStrategy: '0xc7faB3de576caf6044369930422f12C4FDbb2B32',
+    ConvexOUSDMetaStrategyProxy: '0x89Eb88fEdc50FC77ae8a18aAD1cA0ac27f777a90',
+    ConvexStrategy: '0xEe83F8eBB435373f6c231173995cC990697af1B8',
+    ConvexStrategyProxy: '0xEA2Ef2e2E5A749D4A66b41Db9aD85a38Aa264cb3',
+    Dripper: '0xc7068A35F9F5b77471BcFfBdf82D9531D52AFCdc',
+    DripperProxy: '0x80C898ae5e56f888365E235CeB8CEa3EB726CB58',
+    FraxETHStrategyProxy: '0x3fF8654D633D4Ea0faE24c52Aec73B4A20D0d0e5',
+    Generalized4626Strategy: '0x167747bF5B3B6Bf2F7f7C4CCe32C463E9598D425',
+    Governor: '0x72426BA137DEC62657306b12B1E869d43FeC6eC7',
+    Harvester: '0x5E72EB0ab74B5B4d2766a7956D210746Ceab96E1',
+    HarvesterProxy: '0x21Fb5812D70B3396880D30e90D9e5C1202266c89',
+    MinuteTimelock: '0x52BEBd3d7f37EC4284853Fd5861Ae71253A7F428',
+    MorphoAaveStrategy: '0xC72bda59E382be10bb5D71aBd01Ecc65aa16fD83',
+    MorphoAaveStrategyProxy: '0x79F2188EF9350A1dC11A062cca0abE90684b0197',
+    MorphoCompoundStrategy: '0x5cC70898c47f73265BdE5b8BB9D37346d0726c09',
+    MorphoCompoundStrategyProxy: '0x5A4eEe58744D1430876d5cA93cAB5CcB763C037D',
+    OETHOracleRouter: '0x3ccd26e82f7305b12742fbb36708b42f82b61dba',
+    OETHProxy: '0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3',
+    OETHVault: '0xe4775E018bFC72CC3c4944E6879d64cDF885c247',
+    OETHVaultAdmin: '0xbA3656713862dF9De5EB3dFEA22141F06d67221c',
+    OETHVaultCore: '0x1091588Cc431275F99DC5Df311fd8E1Ab81c89F3',
+    OGNStakingProxy: '0x501804B374EF06fa9C427476147ac09F1551B9A0',
+    OUSDProxy: '0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86',
+    OUSDReset: '0x78b107E4c3192E225e6Bc2bc10e28de9866d39De',
+    OUSDResolutionUpgrade: '0xB248c975DaeAc47c4960EcBD10a79E486eBD1cA8',
+    OpenUniswapOracle: '0xc15169Bad17e676b3BaDb699DEe327423cE6178e',
+    RebaseHooks: '0x3dcd70E6A3fB474cFd7567A021864066Fdef6C5c',
+    SingleAssetStaking: '0x3675c3521F8A6876c8287E9bB51E056862D1399B',
+    ThreePoolStrategy: '0x874c74E6ec318AD0a7e6f23301678a4751d00482',
+    ThreePoolStrategyProxy: '0x3c5fe0a3922777343CBD67D3732FCdc9f2Fa6f2F',
+    Timelock: '0x2693C0eCcb5734EBd3910E9c23a8039401a73c87',
+    VaultAdmin: '0x1eF0553FEb80e6f133cAe3092e38F0b23dA6452b',
+    VaultCore: '0x997c35A0bf8E21404aE4379841E0603C957138c3',
+    VaultValueChecker: '0xEEcD72c99749A1FC977704AB900a05e8300F4318',
+    WOETH: '0x9C5a92AaA2A4373D6bd20F7b45cdEb7A13f9AA79',
+    WOETHProxy: '0xDcEe70654261AF21C44c093C300eD3Bb97b78192',
+    WrappedOUSDProxy: '0xD2af830E8CBdFed6CC11Bab697bB25496ed6FA62',
+    WrappedOusd: '0xBF3B9b141Cb3629F5Bb8F721cbA9265c92494539',
     OETHZapper: '0x9858e47bcbbe6fbac040519b02d7cd4b2c470c66',
     OETHVaultProxy: '0x39254033945AA2E4809Cc2977E7087BEE48bd7Ab',
     woETH: '0xdcee70654261af21c44c093c300ed3bb97b78192',
@@ -25,8 +69,8 @@ const abiMapping = {
     UniswapUSDT_ETH: '0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852',
     UniswapV3Router: '0xe592427a0aece92de3edee1f18e0157c05861564',
     UniswapV3Quoter: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
-    UniswapV3OUSD_USDT: '0x129360c964e2e13910d603043f6287e5e9383374',
-    UniswapV3DAI_USDT: '0x6f48eca74b38d2936b02ab603ff4e36a6c0e3a77',
+    UniswapV3OUSD_USDT: '0x129360c964e2e13910d603043f6287e5e9383374', // issues pulling
+    UniswapV3DAI_USDT: '0x6f48eca74b38d2936b02ab603ff4e36a6c0e3a77', // issues pulling
     UniswapV3USDC_USDT: '0x7858e59e0c01ea06df3af3d20ac7b0003275d4bf',
     Flipper: '0xcecaD69d7D4Ed6D52eFcFA028aF8732F27e08F70',
     ChainlinkUSDT_ETH: '0xEe9F2375b4bdF6387aa8265dD4FB8F16512A1d46',
@@ -40,9 +84,9 @@ const abiMapping = {
     CompoundStrategyProxy: '0x12115A32a19e4994C2BA4A5437C22CEf5ABb59C3',
     CompoundStrategy: '0xFaf23Bd848126521064184282e8AD344490BA6f0',
     CurveUSDCStrategyProxy: '0x67023c56548BA15aD3542E65493311F19aDFdd6d',
-    CurveUSDCStrategy: '0x96E89b021E4D72b680BB0400fF504eB5f4A24327',
+    CurveUSDCStrategy: '0x96E89b021E4D72b680BB0400fF504eB5f4A24327', // issues pulling
     CurveUSDTStrategyProxy: '0xe40e09cD6725E542001FcB900d9dfeA447B529C0',
-    CurveUSDTStrategy: '0x75Bc09f72db1663Ed35925B89De2b5212b9b6Cb3',
+    CurveUSDTStrategy: '0x75Bc09f72db1663Ed35925B89De2b5212b9b6Cb3', // issues pulling
     CurveAddressProvider: '0x0000000022d53366457f9d5e68ec105046fc4383',
     CurveOUSDMetaPool: '0x87650D7bbfC3A9F10587d7778206671719d9910D',
     CurveGaugeController: '0x2f50d538606fa9edd2b11e2446beb18c9d5846bb',
@@ -59,7 +103,7 @@ const abiMapping = {
     aTUSD: '0x4DA9b813057D04BAef4e5800E36083717b4a0341',
     aUSDT: '0x71fc860F7D3A592A4a98740e39dB31d25db65ae8',
     DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
-    USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // issues pulling
     TUSD: '0x0000000000085d4780B73119b644AE5ecd22b376',
     USDT: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     stETH: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
@@ -104,7 +148,7 @@ const ethProviderUrl = '';
 
       if (!abi) {
         console.error(`Issue fetching abi for ${contractName}, skipping`);
-        return;
+        continue;
       }
 
       // Proxy
@@ -136,20 +180,27 @@ const ethProviderUrl = '';
           console.error(
             `Issue fetching impl address for ${contractName}, skipping`
           );
-          return;
+          continue;
         }
       }
       // Write out json
       fs.writeFileSync(
         path.resolve(`./packages/web3/generated/${contractName}.json`),
-        abi
+        JSON.stringify({
+          name: contractName,
+          address: contractAddress,
+          abi: JSON.parse(abi),
+        })
       );
       await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (e) {
+      console.log(e.message);
       console.error(`Issue fetching base abi for ${contractName}, skipping`);
-      return;
+      continue;
     }
   }
 
   console.log('Completed');
+
+  await new Promise((resolve) => setTimeout(resolve, 1000000));
 })();
